@@ -1,10 +1,13 @@
 import os
 from flask import abort, Flask, jsonify, request
-
-
-
 from mcstatus import MinecraftServer
 import slack
+import json
+
+#imports the projects json file
+with open("projects.json") as f:
+        projectsFile = json.load(f)
+        projectsList = projectsFile["projects"]
 
 def online():
         server = MinecraftServer.lookup("--SERVER IP HERE--")
@@ -42,4 +45,26 @@ def players():
         response_type='in_channel',
         text=online(),
     )
+
+@app.route('/projects', methods=['POST'])
+def projects():
+    if not request_valid(request):
+        print('NOTVALID')
+        abort(400)
     
+    text = request.args.get("text")
+
+    if text == "":
+        return jsonify(
+            response_type = 'in_channel',
+            text = i for i in projectsList
+        )
+    elif "add" in text:
+        projectsList.append(text[3:])
+        with open("projects.json", "w") as f2:
+            json.dump({"projects":projectsList})
+            
+        return jsonify(
+            response_type = "in_channel",
+            text = "Added!"
+        )
