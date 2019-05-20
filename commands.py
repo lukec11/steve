@@ -6,24 +6,25 @@ import json
 
 #imports the projects json file
 with open("projects.json") as f:
-        projectsFile = json.load(f)
-        projectsList = projectsFile["projects"]
+    projectsFile = json.load(f)
+    projectsList = projectsFile["projects"]
 
 def online():
-        server = MinecraftServer.lookup("--SERVER IP HERE--")
-        server = server.status()
-        current = (
-                "players: {}/{} {}".format(
-                server.players.online,
-                server.players.max,
-                [
-                        "{}".format(player.name)
-                        for player in server.players.sample
-                ] if server.players.sample != None
-                        else "Online"
-                )
+    server = MinecraftServer.lookup("--SERVER IP HERE--")
+    server = server.status()
+    current = (
+        "players: {}/{} {}".format(
+        server.players.online,
+        server.players.max,
+        [
+            "{}".format(player.name)
+            for player in server.players.sample
+        ] 
+        if server.players.sample != None
+        else "Online"
         )
-        return current
+    )
+    return current
 
 
 app = Flask(__name__)
@@ -57,13 +58,13 @@ def projects():
     if text == "":
         return jsonify(
             response_type = 'in_channel',
-            text = i for i in projectsList
+            text = projectsList
         )
     elif "add" in text:
         projectsList.append(text[3:])
         with open("projects.json", "w") as f2:
-            json.dump({"projects":projectsList})
-            
+            json.dump({"projects":projectsList}, f2)
+
         return jsonify(
             response_type = "in_channel",
             text = "Added!"
