@@ -55,7 +55,7 @@ def projects():
     
     text = request.args.get("text")
 
-    if text == "":
+    if not text:
         return jsonify(
             response_type = 'in_channel',
             text = projectsList
