@@ -12,7 +12,7 @@ with open("projects.json") as f:
 def online():
     server = MinecraftServer.lookup("--SERVER IP HERE--")
     server = server.status()
-    if server.players.online.__len__() == 0:
+    if server.players.online == 0:
         return "No players online!"
     
     slackMessage = ""
