@@ -12,19 +12,16 @@ with open("projects.json") as f:
 def online():
     server = MinecraftServer.lookup("--SERVER IP HERE--")
     server = server.status()
-    current = (
-        "players: {}/{} {}".format(
-        server.players.online,
-        server.players.max,
-        [
-            "{}".format(player.name)
-            for player in server.players.sample
-        ] 
-        if server.players.sample != None
-        else "Online"
-        )
-    )
-    return current
+    if server.players.online.__len__() == 0:
+        return "No players online!"
+    
+    slackMessage = ""
+    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n")
+    
+    for player in server.players.sample:
+        slackMessage += ("- " + player.name + "\n")
+        
+    return slackMessage
 
 
 app = Flask(__name__)
