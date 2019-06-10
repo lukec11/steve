@@ -44,7 +44,7 @@ def players():
         text=online(),
     )
 
-@app.route('/projects', methods=['POST'])
+@app.route('/projects', methods=['POST', 'GET'])
 def projects():
     if not request_valid(request):
         print('NOTVALID')
