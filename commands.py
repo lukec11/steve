@@ -32,6 +32,29 @@ def request_valid(request):
 
     return token_valid and team_id_valid
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.values.get("command") == "/projects":
+        if not request_valid(request):
+            print('NOTVALID')
+            abort(400)
+    
+        text = request.args.get("text")
+
+        if not text:
+            return jsonify(
+                response_type='in_channel',
+                text= projectsList
+            )
+        elif "add" in text:
+            projectsList.append(text[3:])
+            with open("projects.json", "w") as f2:
+                json.dump({"projects":projectsList}, f2, indent=4)
+
+            return jsonify(
+                response_type="in_channel",
+                text="Added!"
+            )
 
 @app.route('/players', methods=['POST'])
 def players():
@@ -44,7 +67,7 @@ def players():
         text=online(),
     )
 
-@app.route('/projects', methods=['POST', 'GET'])
+@app.route('/projects', methods=['GET', 'POST'])
 def projects():
     if not request_valid(request):
         print('NOTVALID')
@@ -54,15 +77,15 @@ def projects():
 
     if not text:
         return jsonify(
-            response_type = 'in_channel',
-            text = projectsList
+            response_type='in_channel',
+            text= projectsList
         )
     elif "add" in text:
         projectsList.append(text[3:])
         with open("projects.json", "w") as f2:
-            json.dump({"projects":projectsList}, f2)
+            json.dump({"projects":projectsList}, f2, indent=4)
 
         return jsonify(
-            response_type = "in_channel",
-            text = "Added!"
+            response_type="in_channel",
+            text="Added!"
         )
