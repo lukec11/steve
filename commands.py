@@ -39,12 +39,12 @@ def index():
             print('NOTVALID')
             abort(400)
     
-        text = request.args.get("text")
+        text = str(request.args.get("text"))
 
         if not text:
             return jsonify(
                 response_type='in_channel',
-                text= projectsList
+                text=projectsList
             )
         elif "add" in text:
             projectsList.append(text[3:])
