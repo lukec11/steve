@@ -16,7 +16,7 @@ def online():
         return "No players online!"
     
     slackMessage = ""
-    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n")
+    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":shades_saharchery: online:\n")
     
     for player in server.players.sample:
         slackMessage += ("- " + player.name + "\n")
