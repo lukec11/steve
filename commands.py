@@ -10,7 +10,7 @@ with open("projects.json") as f:
     projectsList = projectsFile["projects"]
 
 def online():
-    server = MinecraftServer.lookup("--SERVER IP HERE--")
+    server = MinecraftServer.lookup(os.environ['SERVER'])
     server = server.status()
     if server.players.online == 0:
         return "No players online!"
