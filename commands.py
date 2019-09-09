@@ -4,12 +4,13 @@ from mcstatus import MinecraftServer
 import slack
 import json
 import mcuuid
+from mcuuid.api import GetPlayerData
 import yaml
 
 
 
 def getUUID(username):
-    username = mcuuid.api.GetPlayerData(username)
+    username = GetPlayerData(username)
     uuid = username.uuid()
 
 def parse(username):
