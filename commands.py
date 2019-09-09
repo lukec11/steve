@@ -7,12 +7,14 @@ import mcuuid
 from mcuuid.tools import is_valid_minecraft_username
 from mcuuid.api import GetPlayerData
 import yaml
+import urllib2
 
 
 
 def getUUID(username):
-    username = GetPlayerData(username)
-    uuid = username.uuid()
+    
+    uuid = urllib2.Request("https://api.mojang.com/profiles/minecraft",json.dumps(username),{"Content-Type": "application/json"})
+
 
 def parse(username):
     yamlFile = yaml.load(open("./config.yml"))
