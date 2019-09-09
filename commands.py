@@ -3,11 +3,25 @@ from flask import abort, Flask, jsonify, request
 from mcstatus import MinecraftServer
 import slack
 import json
+import mcuuid
+import yaml
 
-#imports the projects json file
-with open("projects.json") as f:
-    projectsFile = json.load(f)
-    projectsList = projectsFile["projects"]
+
+
+def getUUID(username):
+    username = GetPlayerData(username)
+    uuid = username.uuid()
+
+def parse(username):
+    yamlFile = yaml.load(open("../files/config.yml"))
+    jsondump = json.dumps(yamlFile, indent=4)
+    jsonfinal = json.loads(jsondump)
+    names = (jsonfinal.get("chat"))
+    nickname = (names.get(getUUID(username)))
+    final = nickname.get('nickname')
+    print(final)
+            
+
 
 def online():
     server = MinecraftServer.lookup(os.environ['SERVER'])
@@ -16,13 +30,12 @@ def online():
         return "No players online!"
     
     slackMessage = ""
-    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":shades_saharchery: online:\n")
+    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n")
     
     for player in server.players.sample:
-        slackMessage += ("- " + player.name + "\n")
+        slackMessage += ("- " + player.name + '(' + parse(player.name) + ')'"\n")
         
     return slackMessage
-
 
 app = Flask(__name__)
 
@@ -32,29 +45,6 @@ def request_valid(request):
 
     return token_valid and team_id_valid
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.values.get("command") == "/projects":
-        if not request_valid(request):
-            print('NOTVALID')
-            abort(400)
-    
-        text = str(request.args.get("text"))
-
-        if not text:
-            return jsonify(
-                response_type='in_channel',
-                text=projectsList
-            )
-        elif "add" in text:
-            projectsList.append(text[3:])
-            with open("projects.json", "w") as f2:
-                json.dump({"projects":projectsList}, f2, indent=4)
-
-            return jsonify(
-                response_type="in_channel",
-                text="Added!"
-            )
 
 @app.route('/players', methods=['POST'])
 def players():
@@ -67,25 +57,4 @@ def players():
         text=online(),
     )
 
-@app.route('/projects', methods=['GET', 'POST'])
-def projects():
-    if not request_valid(request):
-        print('NOTVALID')
-        abort(400)
-    
-    text = request.args.get("text")
 
-    if not text:
-        return jsonify(
-            response_type='in_channel',
-            text= projectsList
-        )
-    elif "add" in text:
-        projectsList.append(text[3:])
-        with open("projects.json", "w") as f2:
-            json.dump({"projects":projectsList}, f2, indent=4)
-
-        return jsonify(
-            response_type="in_channel",
-            text="Added!"
-        )
