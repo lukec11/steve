@@ -65,5 +65,3 @@ def players():
         text=online(),
     )
 
-getUUID('NotACreativeName')
-parse('harbar20')
