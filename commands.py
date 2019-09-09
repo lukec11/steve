@@ -4,13 +4,12 @@ from mcstatus import MinecraftServer
 import slack
 import json
 import yaml
-import urllib2
+import requests
 
 
 
 def getUUID(username):
-    
-    uuid = urllib2.Request("https://api.mojang.com/profiles/minecraft",json.dumps(username),{"Content-Type": "application/json"})
+    uuid = requests.post("https://api.mojang.com/profiles/minecraft",json.dumps(username),{"Content-Type": "application/json"})
 
 
 def parse(username):
