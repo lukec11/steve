@@ -1,15 +1,18 @@
 import os
+import sys
 from flask import abort, Flask, jsonify, request
 from mcstatus import MinecraftServer
 import slack
 import json
 import yaml
-import requests
+from mcuuid.api import GetPlayerData
+
 
 
 
 def getUUID(username):
-    uuid = requests.post("https://api.mojang.com/profiles/minecraft",json.dumps(username),{"Content-Type": "application/json"})
+    username = GetPlayerData(username)
+    uuid = username.uuid()
 
 
 def parse(username):
