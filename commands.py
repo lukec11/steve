@@ -13,6 +13,9 @@ from mcuuid.api import GetPlayerData
 def getUUID(username):
     username = GetPlayerData(username)
     uuid = username.uuid
+    fulluuid = uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]
+    print(fulluuid)
+    return fulluuid
 
 
 def parse(username):
@@ -21,6 +24,7 @@ def parse(username):
     jsonfinal = json.loads(jsondump)
     names = (jsonfinal.get("chat"))
     nickname = (names.get(getUUID(username)))
+    print(nickname)
     final = nickname.get('nickname')
     print(final)
             
@@ -60,4 +64,5 @@ def players():
         text=online(),
     )
 
-
+getUUID('NotACreativeName')
+parse('harbar20')
