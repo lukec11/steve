@@ -9,7 +9,7 @@ import yaml
 
 
 def getUUID(username):
-    username = GetPlayerData(username)
+    username = mcuuid.api.GetPlayerData(username)
     uuid = username.uuid()
 
 def parse(username):
