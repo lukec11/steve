@@ -41,7 +41,7 @@ def online():
     slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n")
     
     for player in server.players.sample:
-        slackMessage += ("- " + player.name + '  (' + parse(player.name) + ') '"\n")
+        slackMessage += ("- " + parse(player.name) + '  (' + player.name + ') '"\n")
         
     return slackMessage
 
