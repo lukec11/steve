@@ -12,7 +12,7 @@ from mcuuid.api import GetPlayerData
 
 def getUUID(username):
     username = GetPlayerData(username)
-    uuid = username.uuid()
+    uuid = username.uuid
 
 
 def parse(username):
