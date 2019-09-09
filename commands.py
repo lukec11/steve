@@ -13,7 +13,7 @@ def getUUID(username):
     uuid = username.uuid()
 
 def parse(username):
-    yamlFile = yaml.load(open("../files/config.yml"))
+    yamlFile = yaml.load(open("./config.yml"))
     jsondump = json.dumps(yamlFile, indent=4)
     jsonfinal = json.loads(jsondump)
     names = (jsonfinal.get("chat"))
