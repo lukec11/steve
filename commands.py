@@ -3,9 +3,6 @@ from flask import abort, Flask, jsonify, request
 from mcstatus import MinecraftServer
 import slack
 import json
-import mcuuid
-from mcuuid.tools import is_valid_minecraft_username
-from mcuuid.api import GetPlayerData
 import yaml
 import urllib2
 
