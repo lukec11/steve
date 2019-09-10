@@ -1,0 +1,6 @@
+#HackClubTools files
+*.yaml
+*.yml
+
+#Config files
+*.conf
