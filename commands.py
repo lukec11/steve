@@ -41,8 +41,8 @@ def online(): #Checks for online players
     
     for player in server.players.sample: #sends currently online players
         if parse(player.name):
-	        nickname = parse(player.name)
-	    else:
+			nickname = parse(player.name)
+		else:
 	        nickname = ""
         
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
