@@ -37,8 +37,13 @@ def online(): #Checks for online players
     slackMessage = ""
     slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
     
+    if parse(player.name):
+		nickname = parse(player.name)
+	else:
+		nickname = ""
+    
     for player in server.players.sample: #sends currently online players
-        slackMessage += ("- " + parse(player.name) + ' [' + player.name + '] '"\n") 
+        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n") 
     return slackMessage
 
 app = Flask(__name__)
