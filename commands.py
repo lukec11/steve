@@ -6,6 +6,7 @@ import slack
 import json
 import yaml
 from mcuuid.api import GetPlayerData
+import nbt2yaml
 
 
 
@@ -23,8 +24,11 @@ def parse(username): #parses HackClubTools config
     jsonfinal = json.loads(jsondump)
     names = (jsonfinal.get("chat")) #gets "chat" section of file
     nickname = (names.get(getUUID(username))) #check UUID against getUUID()
-    final = nickname.get('nickname')
-    return str(final)
+    if (nickname):
+        final = nickname.get('nickname')
+        return str(final)
+    else:
+        return username
             
 
 
@@ -38,11 +42,7 @@ def online(): #Checks for online players
     slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
     
     for player in server.players.sample: #sends currently online players
-        if parse(player.name):
-            nickname = parse(player.name)
-        else:
-            nickname = ""
-        
+        nickname = parse(player.name)
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
@@ -62,7 +62,7 @@ def players():
         abort(400)
 
     return jsonify(
-        response_type='in_channel', #response in channel, visible to everyone
+        response_type='in_channel', #response in chann  el, visible to everyone
         text=online(),
     )
 
