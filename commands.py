@@ -27,7 +27,7 @@ def parse(username): #parses HackClubTools config
     if (nickname):
         final = nickname.get('nickname')
         return str(final)
-    else:
+    else: #checks for users who aren't in the yaml file (which is no longer updated on the new server)
         return username
             
 
