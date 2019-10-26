@@ -6,7 +6,6 @@ import slack
 import json
 import yaml
 from mcuuid.api import GetPlayerData
-import nbt2yaml
 
 
 
