@@ -1,5 +1,5 @@
 Flask==1.1.1
-mcstatus==2.2.1
+mcstatus==2.3.0
 slack==0.0.2
 simplejson==3.15.0
 PyYAML==5.2
