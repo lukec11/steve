@@ -32,8 +32,11 @@ def parse(username): #parses HackClubTools config
 
 
 def online(): #Checks for online players
-    server = MinecraftServer.lookup(os.environ['SERVER'])
-    server = server.status()
+    try:
+        server = MinecraftServer.lookup(os.environ['SERVER'])
+        server = server.status()
+    except ConnectionRefusedError:
+        return "[Modded Server] Server is down!"
     if server.players.online == 0:
         return "[Modded Server] No players online!"
     
@@ -51,8 +54,11 @@ def online(): #Checks for online players
     return slackMessage
 
 def online2():
-    server = MinecraftServer.lookup(os.environ['SERVER2'])
-    server = server.status()
+    try:
+        server = MinecraftServer.lookup(os.environ['SERVER2'])
+        server = server.status()
+    except ConnectionRefusedError:
+        return "[Modded Server] Server is down!"
     if server.players.online == 0:
         return "[Modded Server] No players online!"
 
