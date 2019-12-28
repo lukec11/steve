@@ -35,16 +35,41 @@ def online(): #Checks for online players
     server = MinecraftServer.lookup(os.environ['SERVER'])
     server = server.status()
     if server.players.online == 0:
-        return "No players online!"
+        return "[Modded Server] No players online!"
     
     slackMessage = ""
-    slackMessage += (str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    slackMessage += ("[Modded Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
     
+    if server.players.online == 0:
+        slackMessage += "  No players online :disappointed:"
+        return slackMessage
+
     for player in server.players.sample: #sends currently online players
         nickname = parse(player.name)
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
+
+def online2():
+    server = MinecraftServer.lookup(os.environ['SERVER2'])
+    server = server.status()
+    if server.players.online == 0:
+        return "[Modded Server] No players online!"
+
+    slackMessage = ""
+    slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+
+    for player in server.players.sample: #sends currently online players
+        nickname = parse(player.name)
+        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
+    
+    return slackMessage
+
+def concat():
+    send = ""
+    send = online() + "\n\n ------------------------------------------- \n\n" + online2() 
+
+    return send
 
 app = Flask(__name__)
 
@@ -62,6 +87,6 @@ def players():
 
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
-        text=online(),
+        text=concat(),
     )
 
