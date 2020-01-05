@@ -58,9 +58,9 @@ def online2():
         server = MinecraftServer.lookup(os.environ['SERVER2'])
         server = server.status()
     except ConnectionRefusedError:
-        return "[Modded Server] Server is down!"
+        return "[Vanilla Server] Server is down!"
     if server.players.online == 0:
-        return "[Modded Server] No players online!"
+        return "[Vanilla Server] No players online!"
 
     slackMessage = ""
     slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
