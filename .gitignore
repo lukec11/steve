@@ -4,3 +4,6 @@
 
 #Config files
 *.conf
+
+#HCCore Files
+users/

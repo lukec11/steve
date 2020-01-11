@@ -8,15 +8,13 @@ import yaml
 from mcuuid.api import GetPlayerData
 
 
-
 #Function to get the UUID based on username
 def getUUID(username):
     username = GetPlayerData(username) #uses mcuuid to get short uuid
     uuid = username.uuid 
-    fulluuid = uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:] #converts that to long uuid
-    return fulluuid
+    return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
 
-
+'''
 def parse(username): #parses HackClubTools config
     yamlFile = yaml.load(open("./config.yml")) #Opens (symlinked) HackClubTools file
     jsondump = json.dumps(yamlFile, indent=4) 
@@ -28,8 +26,15 @@ def parse(username): #parses HackClubTools config
         return str(final)
     else: #checks for users who aren't in the yaml file (which is no longer updated on the new server)
         return username
-            
-
+''' 
+#new parse, supporting HCCore rather than HackClubTools        
+def parse(username):
+    uuid = getUUID(username)
+    with open (f"users/{uuid}.json") as f:
+        nick = json.load(f)['nickname']
+        if nick == None: #if the Nick doesn't exist, return just the username
+            nick = username
+    return nick
 
 def online(): #Checks for online players
     try:
@@ -76,7 +81,7 @@ def concat():
     send = online() + "\n\n ------------------------------------------- \n\n" + online2() 
 
     return send
-
+'''
 app = Flask(__name__)
 
 def request_valid(request): #checks for valid slack token / ID
@@ -96,3 +101,5 @@ def players():
         text=concat(),
     )
 
+'''
+print(parse('NotACreativeName'))
