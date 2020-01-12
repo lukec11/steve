@@ -14,19 +14,6 @@ def getUUID(username):
     uuid = username.uuid 
     return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
 
-'''
-def parse(username): #parses HackClubTools config
-    yamlFile = yaml.load(open("./config.yml")) #Opens (symlinked) HackClubTools file
-    jsondump = json.dumps(yamlFile, indent=4) 
-    jsonfinal = json.loads(jsondump)
-    names = (jsonfinal.get("chat")) #gets "chat" section of file
-    nickname = (names.get(getUUID(username))) #check UUID against getUUID()
-    if (nickname):
-        final = nickname.get('nickname')
-        return str(final)
-    else: #checks for users who aren't in the yaml file (which is no longer updated on the new server)
-        return username
-''' 
 #new parse, supporting HCCore rather than HackClubTools        
 def parse(username):
     uuid = getUUID(username)
