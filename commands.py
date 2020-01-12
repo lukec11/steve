@@ -52,7 +52,7 @@ def online2():
     except ConnectionRefusedError:
         return "[Vanilla Server] Server is down!"
     if server.players.online == 0:
-        return "[Vanilla Server] No players online!"
+        return "[Vanilla Server] No players online :disappointed:"
 
     slackMessage = ""
     slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
