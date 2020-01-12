@@ -23,17 +23,18 @@ def parse(username):
             nick = username
     return nick
 
-def online(): #Checks for online players
+#todo: fix this so it's not in 2 separate functions.
+def online(ver): #Checks for online players
     try:
-        server = MinecraftServer.lookup(os.environ['SERVER'])
+        server = MinecraftServer.lookup(os.environ[f'{ver}'])
         server = server.status()
     except ConnectionRefusedError:
-        return "[Modded Server] Server is down!"
+        return f"[{ver} Server] Server is down!"
     if server.players.online == 0:
-        return "[Modded Server] No players online!"
+        return f"[{ver} Server] No players online!"
     
     slackMessage = ""
-    slackMessage += ("[Modded Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
     
     if server.players.online == 0:
         slackMessage += "  No players online :disappointed:"
@@ -44,7 +45,7 @@ def online(): #Checks for online players
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
-
+'''
 def online2():
     try:
         server = MinecraftServer.lookup(os.environ['SERVER2'])
@@ -62,13 +63,13 @@ def online2():
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
-
+'''
 def concat():
     send = ""
-    send = online() + "\n\n ------------------------------------------- \n\n" + online2() 
+    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online2('Vanilla') #adds spacing for slack 
 
     return send
-'''
+
 app = Flask(__name__)
 
 def request_valid(request): #checks for valid slack token / ID
@@ -88,5 +89,3 @@ def players():
         text=concat(),
     )
 
-'''
-print(parse('NotACreativeName'))
