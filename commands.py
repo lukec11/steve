@@ -8,40 +8,33 @@ import yaml
 from mcuuid.api import GetPlayerData
 
 
-
 #Function to get the UUID based on username
 def getUUID(username):
     username = GetPlayerData(username) #uses mcuuid to get short uuid
     uuid = username.uuid 
-    fulluuid = uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:] #converts that to long uuid
-    return fulluuid
+    return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
 
+#new parse, supporting HCCore rather than HackClubTools        
+def parse(username):
+    uuid = getUUID(username)
+    with open (f"users/{uuid}.json") as f:
+        nick = json.load(f)['nickname']
+        if nick == None: #if the Nick doesn't exist, return just the username
+            nick = username
+    return nick
 
-def parse(username): #parses HackClubTools config
-    yamlFile = yaml.load(open("./config.yml")) #Opens (symlinked) HackClubTools file
-    jsondump = json.dumps(yamlFile, indent=4) 
-    jsonfinal = json.loads(jsondump)
-    names = (jsonfinal.get("chat")) #gets "chat" section of file
-    nickname = (names.get(getUUID(username))) #check UUID against getUUID()
-    if (nickname):
-        final = nickname.get('nickname')
-        return str(final)
-    else: #checks for users who aren't in the yaml file (which is no longer updated on the new server)
-        return username
-            
-
-
-def online(): #Checks for online players
+#todo: fix this so it's not in 2 separate functions.
+def online(ver): #Checks for online players
     try:
-        server = MinecraftServer.lookup(os.environ['SERVER'])
+        server = MinecraftServer.lookup(os.environ[f'{ver}'])
         server = server.status()
     except ConnectionRefusedError:
-        return "[Modded Server] Server is down!"
+        return f"[{ver} Server] Server is down!"
     if server.players.online == 0:
-        return "[Modded Server] No players online!"
+        return f"[{ver} Server] No players online!"
     
     slackMessage = ""
-    slackMessage += ("[Modded Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
     
     if server.players.online == 0:
         slackMessage += "  No players online :disappointed:"
@@ -52,7 +45,7 @@ def online(): #Checks for online players
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
-
+'''
 def online2():
     try:
         server = MinecraftServer.lookup(os.environ['SERVER2'])
@@ -60,7 +53,7 @@ def online2():
     except ConnectionRefusedError:
         return "[Vanilla Server] Server is down!"
     if server.players.online == 0:
-        return "[Vanilla Server] No players online!"
+        return "[Vanilla Server] No players online :disappointed:"
 
     slackMessage = ""
     slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
@@ -70,10 +63,10 @@ def online2():
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
-
+'''
 def concat():
     send = ""
-    send = online() + "\n\n ------------------------------------------- \n\n" + online2() 
+    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online2('Vanilla') #adds spacing for slack 
 
     return send
 
