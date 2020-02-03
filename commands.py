@@ -17,7 +17,7 @@ def getUUID(username):
 #new parse, supporting HCCore rather than HackClubTools        
 def parse(username):
     uuid = getUUID(username)
-    with open (f"users/{uuid}.json") as f:
+    with open (f"HCCore/players/{uuid}.json") as f:
         nick = json.load(f)['nickname']
         if nick == None: #if the Nick doesn't exist, return just the username
             nick = username
