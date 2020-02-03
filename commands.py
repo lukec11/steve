@@ -66,7 +66,7 @@ def online2():
 '''
 def concat():
     send = ""
-    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online2('Vanilla') #adds spacing for slack 
+    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack 
 
     return send
 
