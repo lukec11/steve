@@ -22,7 +22,6 @@ def parse(username):
             nick = username
     return nick
 
-#todo: fix this so it's not in 2 separate functions.
 def online(ver): #Checks for online players
     try:
         server = MinecraftServer.lookup(os.environ[f'{ver}'])
