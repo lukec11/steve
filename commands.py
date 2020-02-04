@@ -46,7 +46,7 @@ def online(ver): #Checks for online players
 
 def concat():
     send = ""
-    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack
+    send = online('Modded') + "\n\n" + ("-" * 43) + "\n\n" + online('Vanilla') #adds spacing for slack
 
     return send
 
