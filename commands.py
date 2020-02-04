@@ -9,12 +9,10 @@ from mcstatus import MinecraftServer
 from mcuuid.api import GetPlayerData
 
 
-#Function to get the UUID based on username
 def getPlayerUUID(username):
-    data = GetPlayerData(username) #uses mcuuid to get short uuid
+    data = GetPlayerData(username)
     return UUID(data.uuid)
 
-#new parse, supporting HCCore rather than HackClubTools
 def getNickname(username):
     uuid = getPlayerUUID(username)
     try:
