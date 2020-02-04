@@ -16,7 +16,7 @@ def getPlayerUUID(username):
 def getNickname(username):
     uuid = getPlayerUUID(username)
     try:
-        with open (f"HCCore/players/{uuid}.json") as f:
+        with open(f"HCCore/players/{uuid}.json") as f:
             nick = json.load(f)['nickname']
             if nick == None: #if the Nick doesn't exist, return just the username
                 nick = username
@@ -35,11 +35,11 @@ def buildStatusMessage(config):
     if status.players.online == 0:
         return f"*{config['name']}:* No players online :disappointed:"
 
-    message = (f"*{config['name']}:* " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n")
+    message = (f"*{config['name']}:* " + str(status.players.online) + ' out of ' + str(status.players.max) + ':bust_in_silhouette: online:\n')
 
     for player in status.players.sample:
         nickname = getNickname(player.name)
-        message += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
+        message += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else '') + '\n'
 
     return message
 
