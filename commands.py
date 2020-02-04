@@ -29,15 +29,12 @@ def online(ver): #Checks for online players
         server = server.status()
     except ConnectionRefusedError:
         return f"[{ver} Server] Server is down!"
+
     if server.players.online == 0:
-        return f"[{ver} Server] No players online!"
+        return f"[{ver} Server] No players online :disappointed:"
 
     slackMessage = ""
     slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
-
-    if server.players.online == 0:
-        slackMessage += "  No players online :disappointed:"
-        return slackMessage
 
     for player in server.players.sample: #sends currently online players
         nickname = getNickname(player.name)
