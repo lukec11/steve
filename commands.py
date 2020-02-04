@@ -4,7 +4,6 @@ import sys
 from uuid import UUID
 
 import slack
-import yaml
 from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 from mcuuid.api import GetPlayerData
