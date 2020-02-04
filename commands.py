@@ -27,17 +27,17 @@ def getNickname(username):
 
     return nick
 
-def buildStatusMessage(ver):
+def buildStatusMessage(config):
     try:
-        server = MinecraftServer.lookup(os.environ[f'{ver}'])
+        server = MinecraftServer.lookup(config['address'])
         status = server.status()
     except ConnectionRefusedError:
-        return f"[{ver} Server] Server is down!"
+        return f"[{config['name']}] Server is down!"
 
     if status.players.online == 0:
-        return f"[{ver} Server] No players online :disappointed:"
+        return f"[{config['name']}] No players online :disappointed:"
 
-    message = (f"[{ver} Server] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    message = (f"[{config['name']}] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
 
     for player in status.players.sample: #sends currently online players
         nickname = getNickname(player.name)
@@ -46,25 +46,27 @@ def buildStatusMessage(ver):
     return message
 
 def buildFullMessage():
-    message = [
-        {
-            'type': 'section',
-            'text': {
-                'type': 'mrkdwn',
-                'text': buildStatusMessage('Modded')
-            }
-        },
-        {
-            'type': 'divider',
-        },
-        {
-            'type': 'section',
-            'text': {
-                'type': 'mrkdwn',
-                'text': buildStatusMessage('Vanilla')
-            }
-        }
-    ]
+    message = []
+
+    with open('servers.json') as f:
+        servers = json.load(f)
+        for server in servers:
+            message.extend([
+                {
+                    'type': 'section',
+                    'text': {
+                        'type': 'mrkdwn',
+                        'text': buildStatusMessage(server)
+                    }
+                },
+                {
+                    'type': 'divider'
+                }
+            ])
+
+    # Remove the divider after the last section
+    if len(message) > 1:
+        del message[-1]
 
     return message
 
