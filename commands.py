@@ -1,12 +1,14 @@
+import json
 import os
 import sys
-from flask import abort, Flask, jsonify, request
-from mcstatus import MinecraftServer
-import slack
-import json
-import yaml
-from mcuuid.api import GetPlayerData
 from uuid import UUID
+
+import slack
+import yaml
+from flask import Flask, abort, jsonify, request
+from mcstatus import MinecraftServer
+from mcuuid.api import GetPlayerData
+
 
 #Function to get the UUID based on username
 def getPlayerUUID(username):
