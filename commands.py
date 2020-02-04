@@ -11,10 +11,10 @@ from mcuuid.api import GetPlayerData
 #Function to get the UUID based on username
 def getUUID(username):
     username = GetPlayerData(username) #uses mcuuid to get short uuid
-    uuid = username.uuid 
+    uuid = username.uuid
     return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
 
-#new parse, supporting HCCore rather than HackClubTools        
+#new parse, supporting HCCore rather than HackClubTools
 def parse(username):
     uuid = getUUID(username)
     with open (f"HCCore/players/{uuid}.json") as f:
@@ -32,10 +32,10 @@ def online(ver): #Checks for online players
         return f"[{ver} Server] Server is down!"
     if server.players.online == 0:
         return f"[{ver} Server] No players online!"
-    
+
     slackMessage = ""
     slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
-    
+
     if server.players.online == 0:
         slackMessage += "  No players online :disappointed:"
         return slackMessage
@@ -43,30 +43,12 @@ def online(ver): #Checks for online players
     for player in server.players.sample: #sends currently online players
         nickname = parse(player.name)
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
-    
-    return slackMessage
-'''
-def online2():
-    try:
-        server = MinecraftServer.lookup(os.environ['SERVER2'])
-        server = server.status()
-    except ConnectionRefusedError:
-        return "[Vanilla Server] Server is down!"
-    if server.players.online == 0:
-        return "[Vanilla Server] No players online :disappointed:"
 
-    slackMessage = ""
-    slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
-
-    for player in server.players.sample: #sends currently online players
-        nickname = parse(player.name)
-        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
-    
     return slackMessage
-'''
+
 def concat():
     send = ""
-    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack 
+    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack
 
     return send
 
@@ -88,4 +70,3 @@ def players():
         response_type='in_channel', #response in chann  el, visible to everyone
         text=concat(),
     )
-
