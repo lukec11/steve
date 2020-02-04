@@ -63,10 +63,8 @@ def request_valid(request): #checks for valid slack token / ID
 @app.route('/players', methods=['POST']) #checking for POST from slack
 def players():
     if not request_valid(request):
-        print('NOTVALID')
         abort(400)
 
-    print(request.values)
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
         text=concat(),
