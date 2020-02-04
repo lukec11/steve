@@ -46,7 +46,25 @@ def buildStatusMessage(ver):
     return message
 
 def buildFullMessage():
-    message = buildStatusMessage('Modded') + "\n\n" + ("-" * 43) + "\n\n" + buildStatusMessage('Vanilla') #adds spacing for slack
+    message = [
+        {
+            'type': 'section',
+            'text': {
+                'type': 'mrkdwn',
+                'text': buildStatusMessage('Modded')
+            }
+        },
+        {
+            'type': 'divider',
+        },
+        {
+            'type': 'section',
+            'text': {
+                'type': 'mrkdwn',
+                'text': buildStatusMessage('Vanilla')
+            }
+        }
+    ]
 
     return message
 
@@ -65,5 +83,5 @@ def players():
 
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
-        text=buildFullMessage(),
+        blocks=buildFullMessage()
     )
