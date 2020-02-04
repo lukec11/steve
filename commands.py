@@ -6,13 +6,12 @@ import slack
 import json
 import yaml
 from mcuuid.api import GetPlayerData
-
+from uuid import UUID
 
 #Function to get the UUID based on username
 def getUUID(username):
-    username = GetPlayerData(username) #uses mcuuid to get short uuid
-    uuid = username.uuid
-    return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
+    data = GetPlayerData(username) #uses mcuuid to get short uuid
+    return UUID(data.uuid)
 
 #new parse, supporting HCCore rather than HackClubTools
 def parse(username):
@@ -66,6 +65,7 @@ def players():
         print('NOTVALID')
         abort(400)
 
+    print(request.values)
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
         text=concat(),
