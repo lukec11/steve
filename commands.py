@@ -32,14 +32,14 @@ def buildStatusMessage(config):
         server = MinecraftServer.lookup(config['address'])
         status = server.status()
     except ConnectionRefusedError:
-        return f"[{config['name']}] Server is down!"
+        return f"*{config['name']}:* Server is down! :scream:"
 
     if status.players.online == 0:
-        return f"[{config['name']}] No players online :disappointed:"
+        return f"*{config['name']}:* No players online :disappointed:"
 
-    message = (f"[{config['name']}] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    message = (f"*{config['name']}:* " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n")
 
-    for player in status.players.sample: #sends currently online players
+    for player in status.players.sample:
         nickname = getNickname(player.name)
         message += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
 
