@@ -9,13 +9,13 @@ from mcuuid.api import GetPlayerData
 from uuid import UUID
 
 #Function to get the UUID based on username
-def getUUID(username):
+def getPlayerUUID(username):
     data = GetPlayerData(username) #uses mcuuid to get short uuid
     return UUID(data.uuid)
 
 #new parse, supporting HCCore rather than HackClubTools
 def parse(username):
-    uuid = getUUID(username)
+    uuid = getPlayerUUID(username)
     with open (f"HCCore/players/{uuid}.json") as f:
         nick = json.load(f)['nickname']
         if nick == None: #if the Nick doesn't exist, return just the username
