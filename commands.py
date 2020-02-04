@@ -45,25 +45,8 @@ def online(ver): #Checks for online players
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
     
     return slackMessage
-'''
-def online2():
-    try:
-        server = MinecraftServer.lookup(os.environ['SERVER2'])
-        server = server.status()
-    except ConnectionRefusedError:
-        return "[Vanilla Server] Server is down!"
-    if server.players.online == 0:
-        return "[Vanilla Server] No players online :disappointed:"
 
-    slackMessage = ""
-    slackMessage += ("[Vanilla Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
 
-    for player in server.players.sample: #sends currently online players
-        nickname = parse(player.name)
-        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
-    
-    return slackMessage
-'''
 def concat():
     send = ""
     send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack 

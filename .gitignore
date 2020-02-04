@@ -7,3 +7,13 @@
 
 #HCCore Files
 users/
+*.json
+
+#FTB Utils Files
+*.dat
+
+#etc.
+.env/
+.vscode/
+__pycache__/
+test*
