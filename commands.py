@@ -27,7 +27,7 @@ def getNickname(username):
 
     return nick
 
-def online(ver): #Checks for online players
+def buildStatusMessage(ver):
     try:
         server = MinecraftServer.lookup(os.environ[f'{ver}'])
         status = server.status()
@@ -37,20 +37,18 @@ def online(ver): #Checks for online players
     if status.players.online == 0:
         return f"[{ver} Server] No players online :disappointed:"
 
-    slackMessage = ""
-    slackMessage += (f"[{ver} Server] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    message = (f"[{ver} Server] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
 
     for player in status.players.sample: #sends currently online players
         nickname = getNickname(player.name)
-        slackMessage += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
+        message += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
 
-    return slackMessage
+    return message
 
-def concat():
-    send = ""
-    send = online('Modded') + "\n\n" + ("-" * 43) + "\n\n" + online('Vanilla') #adds spacing for slack
+def buildFullMessage():
+    message = buildStatusMessage('Modded') + "\n\n" + ("-" * 43) + "\n\n" + buildStatusMessage('Vanilla') #adds spacing for slack
 
-    return send
+    return message
 
 app = Flask(__name__)
 
@@ -67,5 +65,5 @@ def players():
 
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
-        text=concat(),
+        text=buildFullMessage(),
     )
