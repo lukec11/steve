@@ -30,17 +30,17 @@ def getNickname(username):
 def online(ver): #Checks for online players
     try:
         server = MinecraftServer.lookup(os.environ[f'{ver}'])
-        server = server.status()
+        status = server.status()
     except ConnectionRefusedError:
         return f"[{ver} Server] Server is down!"
 
-    if server.players.online == 0:
+    if status.players.online == 0:
         return f"[{ver} Server] No players online :disappointed:"
 
     slackMessage = ""
-    slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
+    slackMessage += (f"[{ver} Server] " + str(status.players.online) + " out of " + str(status.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
 
-    for player in server.players.sample: #sends currently online players
+    for player in status.players.sample: #sends currently online players
         nickname = getNickname(player.name)
         slackMessage += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
 
