@@ -42,7 +42,7 @@ def online(ver): #Checks for online players
 
     for player in server.players.sample: #sends currently online players
         nickname = getNickname(player.name)
-        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
+        slackMessage += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else "") + "\n"
 
     return slackMessage
 
