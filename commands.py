@@ -14,7 +14,7 @@ def getPlayerUUID(username):
     return UUID(data.uuid)
 
 #new parse, supporting HCCore rather than HackClubTools
-def parse(username):
+def getNickname(username):
     uuid = getPlayerUUID(username)
     with open (f"HCCore/players/{uuid}.json") as f:
         nick = json.load(f)['nickname']
@@ -39,7 +39,7 @@ def online(ver): #Checks for online players
         return slackMessage
 
     for player in server.players.sample: #sends currently online players
-        nickname = parse(player.name)
+        nickname = getNickname(player.name)
         slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
 
     return slackMessage
