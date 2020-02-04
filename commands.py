@@ -17,10 +17,14 @@ def getPlayerUUID(username):
 #new parse, supporting HCCore rather than HackClubTools
 def getNickname(username):
     uuid = getPlayerUUID(username)
-    with open (f"HCCore/players/{uuid}.json") as f:
-        nick = json.load(f)['nickname']
-        if nick == None: #if the Nick doesn't exist, return just the username
-            nick = username
+    try:
+        with open (f"HCCore/players/{uuid}.json") as f:
+            nick = json.load(f)['nickname']
+            if nick == None: #if the Nick doesn't exist, return just the username
+                nick = username
+    except FileNotFoundError:
+        nick = username
+
     return nick
 
 def online(ver): #Checks for online players
