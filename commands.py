@@ -1,57 +1,72 @@
+import json
 import os
 import sys
-from flask import abort, Flask, jsonify, request
-from mcstatus import MinecraftServer
+from uuid import UUID
+
 import slack
-import json
-import yaml
+from flask import Flask, abort, jsonify, request
+from mcstatus import MinecraftServer
 from mcuuid.api import GetPlayerData
 
 
-#Function to get the UUID based on username
-def getUUID(username):
-    username = GetPlayerData(username) #uses mcuuid to get short uuid
-    uuid = username.uuid 
-    return (uuid[:8] + "-" + uuid[8:12] + "-" + uuid[12:16] + "-" + uuid[16:20] + "-" + uuid[20:]) #converts short uuid to long uuid
+def getPlayerUUID(username):
+    data = GetPlayerData(username)
+    return UUID(data.uuid)
 
-#new parse, supporting HCCore rather than HackClubTools        
-def parse(username):
-    uuid = getUUID(username)
-    with open (f"HCCore/players/{uuid}.json") as f:
-        nick = json.load(f)['nickname']
-        if nick == None: #if the Nick doesn't exist, return just the username
-            nick = username
+def getNickname(username):
+    uuid = getPlayerUUID(username)
+    try:
+        with open(f"HCCore/players/{uuid}.json") as f:
+            nick = json.load(f)['nickname']
+            if nick == None: #if the Nick doesn't exist, return just the username
+                nick = username
+    except FileNotFoundError:
+        nick = username
+
     return nick
 
-#todo: fix this so it's not in 2 separate functions.
-def online(ver): #Checks for online players
+def buildStatusMessage(config):
     try:
-        server = MinecraftServer.lookup(os.environ[f'{ver}'])
-        server = server.status()
+        server = MinecraftServer.lookup(config['address'])
+        status = server.status()
     except ConnectionRefusedError:
-        return f"[{ver} Server] Server is down!"
-    if server.players.online == 0:
-        return f"[{ver} Server] No players online!"
-    
-    slackMessage = ""
-    slackMessage += (f"[{ver} Server] " + str(server.players.online) + " out of " + str(server.players.max) + ":bust_in_silhouette: online:\n") #sends player count in slack
-    
-    if server.players.online == 0:
-        slackMessage += "  No players online :disappointed:"
-        return slackMessage
+        return f"*{config['name']}:* Server is down! :scream:"
 
-    for player in server.players.sample: #sends currently online players
-        nickname = parse(player.name)
-        slackMessage += ("- " + nickname + ' [' + player.name + '] '"\n")
-    
-    return slackMessage
+    if status.players.online == 0:
+        return f"*{config['name']}:* No players online :disappointed:"
 
+    message = (f"*{config['name']}:* " + str(status.players.online) + ' out of ' + str(status.players.max) + ':bust_in_silhouette: online:\n')
 
-def concat():
-    send = ""
-    send = online('Modded') + "\n\n ------------------------------------------- \n\n" + online('Vanilla') #adds spacing for slack 
+    for player in status.players.sample:
+        nickname = getNickname(player.name)
+        message += f"- {nickname}" + (f" ({player.name})" if nickname != player.name else '') + '\n'
 
-    return send
+    return message
+
+def buildFullMessage():
+    message = []
+
+    with open('servers.json') as f:
+        servers = json.load(f)
+        for server in servers:
+            message.extend([
+                {
+                    'type': 'section',
+                    'text': {
+                        'type': 'mrkdwn',
+                        'text': buildStatusMessage(server)
+                    }
+                },
+                {
+                    'type': 'divider'
+                }
+            ])
+
+    # Remove the divider after the last section
+    if len(message) > 1:
+        del message[-1]
+
+    return message
 
 app = Flask(__name__)
 
@@ -64,11 +79,9 @@ def request_valid(request): #checks for valid slack token / ID
 @app.route('/players', methods=['POST']) #checking for POST from slack
 def players():
     if not request_valid(request):
-        print('NOTVALID')
         abort(400)
 
     return jsonify(
         response_type='in_channel', #response in chann  el, visible to everyone
-        text=concat(),
+        blocks=buildFullMessage()
     )
-
