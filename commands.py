@@ -82,6 +82,6 @@ def players():
         abort(400)
 
     return jsonify(
-        response_type='in_channel', #response in chann  el, visible to everyone
+        response_type='in_channel', #response in channel, visible to everyone
         blocks=buildFullMessage()
     )
