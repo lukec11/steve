@@ -162,14 +162,14 @@ def postPlainChatMessage(channel, text):
     )
 
 
-def postEphemeralMessage(channel, text, uid):
+def postEphemeralMessage(channel, text, user):
     # Posts ephemeral plaintext slack message
     slack_client.chat_postEphemeral(
         token=slackBotToken,
         channel=channel,
         as_user=True,
         text=text,
-        user=uid
+        user=user
     )
 
 
