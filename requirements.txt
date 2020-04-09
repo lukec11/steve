@@ -1,5 +1,5 @@
 Flask==1.1.2
-mcstatus==2.3.0
+mcstatus==3.0.0
 slack==0.0.2
 simplejson==3.17.0
 mcuuid==0.2
