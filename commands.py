@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from uuid import UUID
+import random
 
 import slack
 from flask import Flask, abort, jsonify, request
@@ -37,8 +38,14 @@ def buildStatusMessage(config):
     if status.players.online == 0:
         return f"*{config['name']}:* No players online :disappointed:"
 
+    emote = 'bust_in_silhouette:'
+    if status.players.online == 4:
+        randomNum = random.randint(0, 4)
+        if randomNum == 4:
+            emote = ':weed:'
+
     message = (f"*{config['name']}:* " + str(status.players.online) +
-               ' out of ' + str(status.players.max) + ':bust_in_silhouette: online:\n')
+               ' out of ' + str(status.players.max) + f'{emote} online:\n')
 
     for player in status.players.sample:
         nickname = getNickname(player.name)
