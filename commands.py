@@ -94,6 +94,7 @@ def request_valid(request):  # checks for valid slack token / ID
 @app.route('/players', methods=['POST'])  # checking for POST from slack
 def players():
     if not request_valid(request):
+        print('Request invalid!')
         abort(400)
 
     return jsonify(
