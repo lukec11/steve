@@ -171,12 +171,13 @@ def players():
 
 @app.route('/delete', methods=['POST'])
 def delete():
+    print('hi')
     # if not request_valid(request):
     #     print('Request invalid!')
     #     abort(400)
     payload = json.loads(request.form.to_dict()['payload'])
 
-    origMessageSender = payload['message']['user']
+    origMessageSender = payload['message']['blocks'][2]['elements'][0]['text'][15:24]
     deleteReqSender = payload['user']['id']
 
     channel = payload['channel']['id']
@@ -194,7 +195,7 @@ def delete():
         postEphemeralMessage(
             channel=channel,
             uid=deleteReqSender,
-            text=f'Sorry, you can\'t do that! Delete sender is {deleteReqSender}, orig is {origMessageSender}.'
+            text=f'Sorry, you can\'t do that!'
         )
 
     return jsonify(
