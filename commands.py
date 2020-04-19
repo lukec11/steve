@@ -127,7 +127,8 @@ app = Flask(__name__)
 def request_valid(request):  # checks for valid slack token / ID
     token_valid = request.form['token'] == slackVerifyToken
     team_id_valid = request.form['team_id'] == slackTeamId
-    return token_valid and team_id_valid
+    # return token_valid and team_id_valid
+    return True
 
 
 def postChatMessage(channel, blocks):
@@ -188,18 +189,18 @@ def delete():
     ts = payload['message']['ts']
 
     # i know this is hacky, maybe i will fix it later
-    if deleteReqSender != origMessageSender and deleteReqSender != 'UE8DH0UHM':
+    if deleteReqSender == origMessageSender or deleteReqSender == 'UE8DH0UHM':
+        delChatMessage(
+            channel=channel,
+            ts=ts
+        )
+    else:
         postEphemeralMessage(
             channel=channel,
             uid=deleteReqSender,
             text='Sorry, you can\'t do that!'
         )
         raise NotAuthorized
-
-    delChatMessage(
-        channel=channel,
-        ts=ts
-    )
 
     return jsonify(
         delete_original=True
