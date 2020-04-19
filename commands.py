@@ -176,10 +176,9 @@ def players():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-     if not request_valid(request):
-         print('Request invalid!')
-         abort(400)
-
+    if not request_valid(request):
+        print('Request invalid!')
+        abort(400)
     payload = json.loads(request.form.to_dict()['payload'])
 
     origMessageSender = payload['message']['user']
