@@ -195,6 +195,8 @@ def delete():
             ts=ts
         )
     else:
+        print(
+            'Delete sender is {deleteReqSender}, orig is {origMessagesender}.')
         postEphemeralMessage(
             channel=channel,
             uid=deleteReqSender,
