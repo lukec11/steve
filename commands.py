@@ -14,12 +14,6 @@ slackVerifyToken = os.environ['TOKEN']
 slackTeamId = os.environ['TEAM_ID']
 slackBotToken = os.environ['BOT_OAUTH_TOKEN']
 
-# This only serves to raise an exception when user isn't authorized to delete
-
-
-class NotAuthorized(Exception):
-    pass
-
 
 slack_client = slack.WebClient(
     token=slackBotToken
@@ -202,7 +196,6 @@ def delete():
             uid=deleteReqSender,
             text='Sorry, you can\'t do that!'
         )
-        raise NotAuthorized
 
     return jsonify(
         delete_original=True
