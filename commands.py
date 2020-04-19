@@ -9,6 +9,22 @@ from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 from mcuuid.api import GetPlayerData
 
+# get configs
+slackVerifyToken = os.environ['TOKEN']
+slackTeamId = os.environ['TEAM_ID']
+slackBotToken = os.environ['BOT_OAUTH_TOKEN']
+
+# This only serves to raise an exception when user isn't authorized to delete
+
+
+class NotAuthorized(Exception):
+    pass
+
+
+slack_client = slack.WebClient(
+    token=slackBotToken
+)
+
 
 def getPlayerUUID(username):
     data = GetPlayerData(username)
@@ -55,13 +71,12 @@ def buildStatusMessage(config):
     return message
 
 
-def buildFullMessage():
+def buildFullMessage(channel, user):
     message = []
 
     with open('servers.json') as f:
         servers = json.load(f)
         for server in servers:
-            print(f'building server {server}.')
             message.extend([
                 {
                     'type': 'section',
@@ -72,12 +87,36 @@ def buildFullMessage():
                 },
                 {
                     'type': 'divider'
+                },
+                {
+                    "type": "actions",
+                    "elements": [
+                            {
+                                "type": "button",
+                                "text": {
+                                        "type": "plain_text",
+                                        "text": "Delete",
+                                        "emoji": True
+                                },
+                                "style": "danger"
+                            }
+                    ]
+                },
+                {
+                    'type': 'context',
+                    'elements': [
+                        {
+                            'type': 'mrkdwn',
+                            'text': f'Requested by <@{user}>'
+                        }
+                    ]
                 }
+
             ])
 
     # Remove the divider after the last section
     if len(message) > 1:
-        del message[-1]
+        del message[-3]
 
     return message
 
@@ -86,18 +125,83 @@ app = Flask(__name__)
 
 
 def request_valid(request):  # checks for valid slack token / ID
-    token_valid = request.form['token'] == os.environ['TOKEN']
-    team_id_valid = request.form['team_id'] == os.environ['TEAM_ID']
+    token_valid = request.form['token'] == slackVerifyToken
+    team_id_valid = request.form['team_id'] == slackVerifyToken
     return token_valid and team_id_valid
+
+
+def postChatMessage(channel, blocks):
+    slack_client.chat_postMessage(
+        token=slackBotToken,
+        channel=channel,
+        as_user=True,
+        blocks=blocks
+    )
+
+
+def postEphemeralMessage(channel, text, uid):
+    slack_client.chat_postEphemeral(
+        token=slackBotToken,
+        channel=channel,
+        as_user=True,
+        text=text,
+        user=uid
+    )
+
+
+def delChatMessage(channel, ts):
+    slack_client.chat_delete(
+        token=slackBotToken,
+        channel=channel,
+        as_user=True,
+        ts=ts
+    )
 
 
 @app.route('/players', methods=['POST'])  # checking for POST from slack
 def players():
-    if not request_valid(request):
-        print('Request invalid!')
-        abort(400)
+
+    # if not request_valid(request):
+    #    print('Request invalid!')
+    #    abort(400)
+
+    channel = request.form['channel_id']
+    user = request.form['user_id']
+
+    msg = buildFullMessage(channel, user)
+    postChatMessage(channel, msg)
+
+    return ('', 200)
+
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    # if not request_valid(request):
+    #     print('Request invalid!')
+    #     abort(400)
+
+    payload = json.loads(request.form.to_dict()['payload'])
+
+    origMessageSender = payload['message']['user']
+    deleteReqSender = payload['user']['id']
+
+    channel = payload['channel']['id']
+    ts = payload['message']['ts']
+
+    # i know this is hacky, maybe i will fix it later
+    if deleteReqSender != origMessageSender and deleteReqSender != 'UE8DH0UHM':
+        postEphemeralMessage(
+            channel=channel,
+            uid=deleteReqSender,
+            text='Sorry, you can\'t do that!'
+        )
+        raise NotAuthorized
+
+    delChatMessage(
+        channel=channel,
+        ts=ts
+    )
 
     return jsonify(
-        response_type='in_channel',  # response in channel, visible to everyone
-        blocks=buildFullMessage()
+        delete_original=True
     )
