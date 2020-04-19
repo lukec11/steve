@@ -126,7 +126,7 @@ app = Flask(__name__)
 
 def request_valid(request):  # checks for valid slack token / ID
     token_valid = request.form['token'] == slackVerifyToken
-    team_id_valid = request.form['team_id'] == slackVerifyToken
+    team_id_valid = request.form['team_id'] == slackTeamId
     return token_valid and team_id_valid
 
 
@@ -176,9 +176,9 @@ def players():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    if not request_valid(request):
-        print('Request invalid!')
-        abort(400)
+     if not request_valid(request):
+         print('Request invalid!')
+         abort(400)
 
     payload = json.loads(request.form.to_dict()['payload'])
 
