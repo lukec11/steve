@@ -190,11 +190,11 @@ def delete():
         )
     else:
         print(
-            'Delete sender is {deleteReqSender}, orig is {origMessagesender}.')
+            f'Delete sender is {deleteReqSender}, orig is {origMessageSender}.')
         postEphemeralMessage(
             channel=channel,
             uid=deleteReqSender,
-            text='Sorry, you can\'t do that!'
+            text=f'Sorry, you can\'t do that! Delete sender is {deleteReqSender}, orig is {origMessageSender}.'
         )
 
     return jsonify(
