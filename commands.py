@@ -134,6 +134,15 @@ def postChatMessage(channel, blocks):
     )
 
 
+def postPlaintextChatMessage(channel, text):
+    slack_client.chat_postMessage(
+        token=slackBotToken,
+        channel=channel,
+        as_user=True,
+        text=text
+    )
+
+
 def postEphemeralMessage(channel, text, uid):
     slack_client.chat_postEphemeral(
         token=slackBotToken,
@@ -150,6 +159,13 @@ def delChatMessage(channel, ts):
         channel=channel,
         as_user=True,
         ts=ts
+    )
+
+
+def inviteToChannel(channel, user):
+    slack_client.conversations_join(
+        token=slackBotToken,
+        channel=channel
     )
 
 
@@ -177,11 +193,18 @@ def players():
     try:
         postChatMessage(channel, msg)
     except:
-        privateMessageUser(
-            user=user,
-            text=postChatMessage(
-                user, "In order to use the bot in the channel, please invite <@UKD6P483E>!")
-        )
+        try:
+            inviteToChannel(
+                channel=channel,
+                user=user
+            )
+            postChatMessage(channel, msg)
+        except:
+            privateMessageUser(
+                user=user,
+                text=postPlaintextChatMessage(
+                    channel, msg + '\n\n' + 'In order to use the bot in the channel, please invite <@UKD6P483E> to the channel you tried to run it in!')
+            )
 
     return ('', 200)
 
