@@ -193,7 +193,8 @@ def players():
         except:
             privateMessageUser(
                 user=user,
-                text='Please invite <@UKD6P483E> to the channel you tried to run it in!'
+                text=postChatMessage(
+                    channel, msg) + '\n\n' + 'In order to use the bot in the channel, please invite <@UKD6P483E>!'
             )
 
     return ('', 200)
