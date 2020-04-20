@@ -180,7 +180,7 @@ def players():
         privateMessageUser(
             user=user,
             text=postChatMessage(
-                user, 'In order to use the bot in the channel, please invite <@UKD6P483E>!')
+                user, "In order to use the bot in the channel, please invite <@UKD6P483E>!")
         )
 
         privateMessageUser(
