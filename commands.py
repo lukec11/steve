@@ -153,14 +153,6 @@ def delChatMessage(channel, ts):
     )
 
 
-def inviteToChannel(channel, user):
-    slack_client.channels_invite(
-        token=slackBotToken,
-        channel=channel,
-        user=user
-    )
-
-
 def privateMessageUser(user, text):
     slack_client.chat_postMessage(
         token=slackBotToken,
@@ -185,17 +177,11 @@ def players():
     try:
         postChatMessage(channel, msg)
     except:
-        try:
-            inviteToChannel(
-                channel=channel,
-                user=user
-            )
-        except:
-            privateMessageUser(
-                user=user,
-                text=postChatMessage(
-                    channel, msg) + '\n\n' + 'In order to use the bot in the channel, please invite <@UKD6P483E>!'
-            )
+        privateMessageUser(
+            user=user,
+            text=postChatMessage(
+                user, msg) + '\n\n' + 'In order to use the bot in the channel, please invite <@UKD6P483E>!'
+        )
 
     return ('', 200)
 
