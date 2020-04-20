@@ -154,11 +154,10 @@ def delChatMessage(channel, ts):
 
 
 def inviteToChannel(channel, user):
-    slack_client.conversations_invite(
+    slack_client.channels_invite(
         token=slackBotToken,
         channel=channel,
-        as_user=True,
-        users=user
+        user=user
     )
 
 
