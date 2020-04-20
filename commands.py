@@ -195,7 +195,7 @@ def players():
             )
             postPlaintextChatMessage(
                 channel=user,
-                text='In order to use the bot in the channel, please invite <@UKD6P483E> to the channel you tried to run it in!')
+                text='In order to use the bot in the channel, please invite <@UKD6P483E> to <#{channel}!')
 
     return ('', 200)
 
