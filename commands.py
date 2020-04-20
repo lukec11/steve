@@ -153,6 +153,24 @@ def delChatMessage(channel, ts):
     )
 
 
+def inviteToChannel(channel, user):
+    slack_client.conversations_invite(
+        token=slackBotToken,
+        channel=channel,
+        as_user=True,
+        users=user
+    )
+
+
+def privateMessageUser(user, text):
+    slack_client.chat_postMessage(
+        token=slackBotToken,
+        channel=user,
+        as_user=True,
+        text=text
+    )
+
+
 @app.route('/players', methods=['POST'])  # checking for POST from slack
 def players():
 
@@ -164,7 +182,20 @@ def players():
     user = request.form['user_id']
 
     msg = buildFullMessage(channel, user)
-    postChatMessage(channel, msg)
+
+    try:
+        postChatMessage(channel, msg)
+    except:
+        try:
+            inviteToChannel(
+                channel=channel,
+                user=user
+            )
+        except:
+            privateMessageUser(
+                user=user,
+                text='Please invite <@UKD6P483E> to the channel you tried to run it in!'
+            )
 
     return ('', 200)
 
