@@ -188,7 +188,8 @@ def players():
             joinChannel(
                 channel=channel)
             postChatMessage(channel, msg)
-        except:
+        except Exception as e:
+            raise AssertionError(e)
             postChatMessage(
                 channel=user,
                 blocks=msg
