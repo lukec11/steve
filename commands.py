@@ -25,7 +25,7 @@ def getPlayerUUID(username):
     return UUID(data.uuid)
 
 
-def getFormatedOutput(username):
+def getFormattedOutput(username):
     uuid = getPlayerUUID(username)
     try:
         with open(f'HCCore/players/{uuid}.json') as f:
@@ -60,7 +60,7 @@ def buildStatusMessage(config):
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
     for player in status.players.sample:
-        message += getFormatedOutput(player.name)
+        message += getFormattedOutput(player.name)
 
     return message
 
