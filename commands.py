@@ -31,11 +31,11 @@ def getFormattedOutput(username):
         with open(f'HCCore/players/{uuid}.json') as f:
             nick = json.load(f)['nickname']
             if nick == None:  # if the Nick doesn't exist, return just the username
-                output = f'{username[:1]}\u200c{username[1:]}\n'
+                output = f'- {username[:1]}\u200c{username[1:]}\n'
             else:
-                output = f'{nick[:1]}\u200c{nick[1:]} ({username[:1]}\u200c{username[1:]})\n'
+                output = f'- {nick[:1]}\u200c{nick[1:]} ({username[:1]}\u200c{username[1:]})\n'
     except FileNotFoundError:
-        output = f'{username[:1]}\u200c{username[1:]}\n'
+        output = f'- {username[:1]}\u200c{username[1:]}\n'
 
     return output
 
