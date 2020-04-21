@@ -25,17 +25,19 @@ def getPlayerUUID(username):
     return UUID(data.uuid)
 
 
-def getNickname(username):
+def getFormattedOutput(username):
     uuid = getPlayerUUID(username)
     try:
         with open(f'HCCore/players/{uuid}.json') as f:
             nick = json.load(f)['nickname']
             if nick == None:  # if the Nick doesn't exist, return just the username
-                nick = username
+                output = f'- {username[:1]}\u200c{username[1:]}\n'
+            else:
+                output = f'- {nick[:1]}\u200c{nick[1:]} ({username[:1]}\u200c{username[1:]})\n'
     except FileNotFoundError:
-        nick = username
+        output = f'- {username[:1]}\u200c{username[1:]}\n'
 
-    return nick
+    return output
 
 
 def buildStatusMessage(config):
@@ -58,9 +60,7 @@ def buildStatusMessage(config):
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
     for player in status.players.sample:
-        nickname = getNickname(player.name)
-        message += f"- {nickname}" + \
-            (f" ({player.name})" if nickname != player.name else '') + '\n'
+        message += getFormattedOutput(player.name)
 
     return message
 
@@ -195,7 +195,7 @@ def players():
             )
             postPlaintextChatMessage(
                 channel=user,
-                text=f'In order to use the bot in the channel, please invite <@UKD6P483E> to the channel!')
+                text=f'In order to use the bot in the channel, please invite <@UKD6P483E>!')
 
     return ('', 200)
 
