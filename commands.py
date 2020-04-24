@@ -121,8 +121,8 @@ app = Flask(__name__)
 def request_valid(request):  # checks for valid slack token / ID
     token_valid = request.form['token'] == slackVerifyToken
     team_id_valid = request.form['team_id'] == slackTeamId
-    # return token_valid and team_id_valid
-    return True
+    return token_valid and team_id_valid
+    #return True
 
 
 def postChatMessage(channel, blocks):
