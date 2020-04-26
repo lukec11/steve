@@ -5,3 +5,4 @@ simplejson==3.17.0
 mcuuid==0.2
 autopep8==1.5.1
 slackclient==2.4.0
+pylint==2.4.4
