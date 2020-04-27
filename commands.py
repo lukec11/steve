@@ -21,14 +21,20 @@ slack_client = slack.WebClient(
 
 
 def getPlayerUUID(username):
+    """Return as a "long" UUID"""
     data = GetPlayerData(username)
     return UUID(data.uuid)
 
 
 def getFormattedOutput(username):
+    """Gets the formatted output of the username, complete with nickname support
+    - Places a "\u200c" character after nickname
+      -  prevent slack from tagging someone by name
+      - still show name without visible modification"""
     uuid = getPlayerUUID(username)
     try:
         with open(f'HCCore/players/{uuid}.json') as f:
+            # Gathers nick from HCCore's JSON file
             nick = json.load(f)['nickname']
             if nick == None:  # if the Nick doesn't exist, return just the username
                 output = f'- {username[:1]}\u200c{username[1:]}\n'
@@ -41,6 +47,9 @@ def getFormattedOutput(username):
 
 
 def buildStatusMessage(config):
+    """Builds the final message to send to slack
+    - Header (# Players online)
+    - Nicknames + IGNs of online players"""
     try:
         server = MinecraftServer.lookup(config['address'])
         status = server.status()
@@ -50,11 +59,17 @@ def buildStatusMessage(config):
     if status.players.online == 0:
         return f"*{config['name']}:* No players online :disappointed:"
 
+    """Fun addition - if there are 4 players online, 
+    there is a 20% chance that the appearing emoji will 
+    be :weed:. Can be disabled in config."""
     emote = ':bust_in_silhouette:'
-    if status.players.online == 4:
-        randomNum = random.randint(0, 4)
-        if randomNum == 4:
-            emote = ':weed:'
+    try:
+        if status.players.online == 4 and config['weedEasterEgg'] != False:
+            randomNum = random.randint(0, 4)
+            if randomNum == 4:
+                emote = ':weed:'
+    except KeyError:
+        pass
 
     message = (f"*{config['name']}:* " + str(status.players.online) +
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
@@ -119,21 +134,24 @@ app = Flask(__name__)
 
 
 def request_valid(request):  # checks for valid slack token / ID
+    """Checks whether or not the request from slack is valid"""
     token_valid = request.form['token'] == slackVerifyToken
     team_id_valid = request.form['team_id'] == slackTeamId
     return token_valid and team_id_valid
 
 
-def postChatMessage(channel, blocks):
+def postRichChatMessage(channel, blocks):
+    # Posts public JSON-formatted slack message
     slack_client.chat_postMessage(
         token=slackBotToken,
         channel=channel,
         as_user=True,
-        blocks=blocks
+        block=blocks
     )
 
 
-def postPlaintextChatMessage(channel, text):
+def postPlainChatMessage(channel, text):
+    # Posts public plaintext slack message
     slack_client.chat_postMessage(
         token=slackBotToken,
         channel=channel,
@@ -143,6 +161,7 @@ def postPlaintextChatMessage(channel, text):
 
 
 def postEphemeralMessage(channel, text, uid):
+    # Posts ephemeral plaintext slack message
     slack_client.chat_postEphemeral(
         token=slackBotToken,
         channel=channel,
@@ -153,6 +172,7 @@ def postEphemeralMessage(channel, text, uid):
 
 
 def delChatMessage(channel, ts):
+    # Delete chat message based on ts
     slack_client.chat_delete(
         token=slackBotToken,
         channel=channel,
@@ -162,6 +182,7 @@ def delChatMessage(channel, ts):
 
 
 def joinChannel(channel):
+    # Method to add the bot to a public channel
     slack_client.conversations_join(
         token=slackBotToken,
         channel=channel
@@ -171,6 +192,7 @@ def joinChannel(channel):
 @app.route('/players', methods=['POST'])  # checking for POST from slack
 def players():
 
+    # If verification fails, return 400
     if not request_valid(request):
         print('Request invalid!')
         abort(400)
@@ -180,41 +202,45 @@ def players():
 
     msg = buildFullMessage(channel, user)
 
-    try:
-        postChatMessage(channel, msg)
+    try:  # Attempts to post message in channel
+        postRichChatMessage(channel, msg)
     except:
-        try:
+        try:  # If it cannot post in the channel, it will attempt to join the channel
             joinChannel(
                 channel=channel)
-            postChatMessage(channel, msg)
-        except:
-            postChatMessage(
+            postRichChatMessage(channel, msg)
+        except:  # If it cannot join the channel, it will DM the command runner
+            postRichChatMessage(
                 channel=user,
                 blocks=msg
             )
-            postPlaintextChatMessage(
+            postPlainChatMessage(
                 channel=user,
                 text=f'In order to use the bot in the channel, please invite <@UKD6P483E>!')
 
+    # Returns 200 to make slack happy and avoid operation_timeout
     return ('', 200)
 
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    print('hi')
-    # if not request_valid(request):
-    #     print('Request invalid!')
-    #     abort(400)
+    """Deletes messages posted by the bot"""
+    if not request_valid(request):
+        print('Request invalid!')
+        abort(400)
+
+    # Grabs and parses payload from button
     payload = json.loads(request.form.to_dict()['payload'])
 
+    # Parses original message sender from message
     origMessageSender = payload['message']['blocks'][2]['elements'][0]['text'][15:24]
     deleteReqSender = payload['user']['id']
 
     channel = payload['channel']['id']
     ts = payload['message']['ts']
 
-    # i know this is hacky, maybe i will fix it later
-    if deleteReqSender == origMessageSender or deleteReqSender == 'UE8DH0UHM':
+    # Only allows original message sender or me to delete message
+    if deleteReqSender == origMessageSender or deleteReqSender == 'UE8DH0UHM':  # yes ik
         delChatMessage(
             channel=channel,
             ts=ts
@@ -229,5 +255,6 @@ def delete():
         )
 
     return jsonify(
+        # Tells slack that the original message was deleted
         delete_original=True
     )
