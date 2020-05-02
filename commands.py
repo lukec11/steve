@@ -147,7 +147,7 @@ def postRichChatMessage(channel, blocks):
         token=slackBotToken,
         channel=channel,
         as_user=True,
-        block=blocks
+        blocks=blocks
     )
 
 
