@@ -204,12 +204,12 @@ def players():
     msg = buildFullMessage(channel, user)
 
     try:  # Attempts to post message in channel
-        postRichChatMessage(channel, msg)
+        postRichChatMessage(channel=channel, blocks=msg)
     except:
         try:  # If it cannot post in the channel, it will attempt to join the channel
             joinChannel(
                 channel=channel)
-            postRichChatMessage(channel, msg)
+            postRichChatMessage(channel=channel, blocks=msg)
         except:  # If it cannot join the channel, it will DM the command runner
             postRichChatMessage(
                 channel=user,
