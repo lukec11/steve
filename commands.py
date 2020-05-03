@@ -226,9 +226,6 @@ def players():
 @app.route('/delete', methods=['POST'])
 def delete():
     """Deletes messages posted by the bot"""
-    if not request_valid(request):
-        print('Request invalid!')
-        abort(400)
 
     # Grabs and parses payload from button
     payload = json.loads(request.form.to_dict()['payload'])
