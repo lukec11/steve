@@ -44,7 +44,6 @@ def getFormattedOutput(reName, realName):
     except FileNotFoundError as e:
         output = f'- {reName[:1]}\u200c{reName[1:]}\n'
         print(f'ERROR: {e}')
-    output = f'- {reName[:1]}\u200c{reName[1:]}\n'
 
     return output
 
