@@ -148,7 +148,7 @@ def postRichChatMessage(channel, blocks):
         channel=channel,
         as_user=True,
         blocks=blocks,
-        parse='full'  # this is totally undocumented, but without it slack will format messages
+        parse=None  # this is totally undocumented, but without it slack will format messages
     )
 
 
