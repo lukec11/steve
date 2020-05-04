@@ -3,6 +3,7 @@ import os
 import sys
 from uuid import UUID
 import random
+import re
 
 import slack
 from flask import Flask, abort, jsonify, request
@@ -26,23 +27,24 @@ def getPlayerUUID(username):
     return UUID(data.uuid)
 
 
-def getFormattedOutput(username):
+def getFormattedOutput(reName, realName):
     """Gets the formatted output of the username, complete with nickname support
     - Places a "\u200c" character after nickname
       -  prevent slack from tagging someone by name
       - still show name without visible modification"""
-#     uuid = getPlayerUUID(username)
-#     try:
-#         with open(f'HCCore/players/{uuid}.json') as f:
-#             # Gathers nick from HCCore's JSON file
-#             nick = json.load(f)['nickname']
-#             if nick == None:  # if the Nick doesn't exist, return just the username
-#                 output = f'- {username[:1]}\u200c{username[1:]}\n'
-#             else:
-#                 output = f'- {nick[:1]}\u200c{nick[1:]} ({username[:1]}\u200c{username[1:]})\n'
-#     except FileNotFoundError:
-#         output = f'- {username[:1]}\u200c{username[1:]}\n'
-    output = f'- {username[:1]}\u200c{username[1:]}\n'
+    uuid = getPlayerUUID(realName)
+    try:
+        with open(f'HCCore/players/{uuid}.json') as f:
+            # Gathers nick from HCCore's JSON file
+            nick = json.load(f)['nickname']
+            if nick == None:  # if the Nick doesn't exist, return just the username
+                output = f'- {reName[:1]}\u200c{reName[1:]}\n'
+            else:
+                output = f'- {nick[:1]}\u200c{nick[1:]} ({reName[:1]}\u200c{reName[1:]})\n'
+    except FileNotFoundError as e:
+        output = f'- {reName[:1]}\u200c{reName[1:]}\n'
+        print(f'ERROR: {e}')
+    output = f'- {reName[:1]}\u200c{reName[1:]}\n'
 
     return output
 
@@ -76,7 +78,10 @@ def buildStatusMessage(config):
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
     for player in status.players.sample:
-        message += getFormattedOutput(player.name)
+        # uses regex in order to prevent nickname abuse
+        name = re.sub(r'[*_`!|](\w+)[*_`!|]', r'\g<1>', player.name)
+
+        message += getFormattedOutput(reName=name, realName=player.name)
 
     return message
 
@@ -147,8 +152,7 @@ def postRichChatMessage(channel, blocks):
         token=slackBotToken,
         channel=channel,
         as_user=True,
-        blocks=blocks,
-        parse=None  # this is totally undocumented, but without it slack will format messages
+        blocks=blocks
     )
 
 
