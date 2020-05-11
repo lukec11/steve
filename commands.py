@@ -232,8 +232,13 @@ def delete():
     # Grabs and parses payload from button
     payload = json.loads(request.form.to_dict()['payload'])
 
-    # Parses original message sender from message
-    origMessageSender = payload['message']['blocks'][2]['elements'][0]['text'][15:24]
+    # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
+    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
+    if len(origMessageSignature) == 25:
+        origMessageSender = payload['message']['blocks'][2]['elements'][0]['text'][15:24]
+    elif len(origMessageSignature) == 27:
+        origMessageSender = payload['message']['blocks'][2]['elements'][0]['text'][15:26]
+
     deleteReqSender = payload['user']['id']
 
     channel = payload['channel']['id']
