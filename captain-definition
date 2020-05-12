@@ -12,6 +12,6 @@
 		"ENV FLASK_ENV production",
 		"RUN ls",
 		"CMD [ \"python3\", \"commands.py\" ]",
-		"EXPOSE 8000"
+		"EXPOSE 80"
 	]
 }
