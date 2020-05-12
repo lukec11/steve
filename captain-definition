@@ -1,5 +1,5 @@
 {
-	"schemaVersion": 1,
+	"schemaVersion": 2,
 	"dockerfileLines": [
 		"FROM python:3.7.0-alpine",
 		"COPY ./src /app",
@@ -7,6 +7,6 @@
 		"RUN ls -a",
 		"RUN pip3 install -r requirements.txt",
 		"CMD [ \"python3\", \"commands.py\" ]",
-		"EXPOSE 5000 27017"
+		"EXPOSE 8000"
 	]
 }
