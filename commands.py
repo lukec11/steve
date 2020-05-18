@@ -148,8 +148,7 @@ def postRichChatMessage(channel, blocks):
         token=slackBotToken,
         channel=channel,
         as_user=True,
-        blocks=blocks,
-        parse=None  # this is totally undocumented, but without it slack will format messages
+        blocks=blocks
     )
 
 
