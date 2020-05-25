@@ -30,19 +30,9 @@ def getPlayerUUID(username):
 
 
 def getNick(uuid):
-    try:
-        with open(f'players/{uuid}.json') as f:
-            # Gathers nick from HCCore's JSON file
-            nick = json.load(f)['nickname']
-            print('User\'s file was found! Sending.')
-            nick = re.sub(censoredWords, 'null', nick)
-            return nick
-    except FileNotFoundError:
-        print(f'User {uuid} not found! Getting their json file.')
-        res = requests.get(f'{playerDataApi}/{uuid}.json')
-        open(f'players/{uuid}.json', 'wb').write(res.content)
-        nick = re.sub(censoredWords, 'null', res.json()['nickname'])
-        return nick
+    res = requests.get(f'{playerDataApi}/{uuid}.json')
+    nick = re.sub(censoredWords, 'null', res.json()['nickname'])
+    return nick
 
 
 def getFormattedOutput(reName, realName):
