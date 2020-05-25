@@ -8,11 +8,14 @@ import slack
 from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 from mcuuid.api import GetPlayerData
+import requests
 
 # get configs
 slackVerifyToken = os.environ['TOKEN']
 slackTeamId = os.environ['TEAM_ID']
 slackBotToken = os.environ['BOT_OAUTH_TOKEN']
+playerDataApi = os.environ['PLAYER_DATA_API']
+censoredWords = os.environ['CENSORED_WORDS']
 
 
 slack_client = slack.WebClient(
@@ -26,27 +29,48 @@ def getPlayerUUID(username):
     return UUID(data.uuid)
 
 
+def getNick(uuid):
+    try:
+        with open(f'players/{uuid}.json') as f:
+            # Gathers nick from HCCore's JSON file
+            nick = json.load(f)['nickname']
+            print('User\'s file was found! Sending.')
+            nick = re.sub(censoredWords, 'null', nick)
+            return nick
+    except FileNotFoundError:
+        print(f'User {uuid} not found! Getting their json file.')
+        res = requests.get(f'{playerDataApi}/{uuid}.json')
+        open(f'players/{uuid}.json', 'wb').write(res.content)
+        nick = re.sub(censoredWords, 'null', res.json()['nickname'])
+        return nick
+
+
 def getFormattedOutput(reName, realName):
     """Gets the formatted output of the username, complete with nickname support
     - Places a "\u200c" character after nickname
       -  prevent slack from tagging someone by name
       - still show name without visible modification"""
     uuid = getPlayerUUID(realName)
+
     try:
-        with open(f'HCCore/players/{uuid}.json') as f:
-            # Gathers nick from HCCore's JSON file
-            nick = json.load(f)['nickname']
-            # Sets Nickmame once
-            ign = '\u200c'.join(reName[i:i+1]
-                                for i in range(0, len(reName), 1))
-            if nick == None:  # if the Nick doesn't exist, return just the username
-                output = f'- {ign}'
-            else:
-                output = '- ' + '\u200c'.join(nick[i:i+1]
-                                              for i in range(0, len(nick), 1)) + f' ({ign})' + '\n'
-    except FileNotFoundError as e:
-        output = f'- {reName[:1]}\u200c{reName[1:]}\n'
+        nick = getNick(uuid)
+
+        ign = '\u200c'.join(reName[i:i+1]
+                            for i in range(0, len(reName), 1))
+        if nick == None:  # if the Nick doesn't exist, return just the username
+            output = f'- {ign}'
+        else:
+            output = '- ' + \
+                '\u200c'.join(
+                    nick[i:i+1] for i in range(0, len(nick), 1)) + f' ({ign})'
+    except TypeError as e:
+        f'- {ign}'
         print(f'ERROR: {e}')
+
+    if '[BOT]' in nick:
+        output = f'~{output}~'
+
+    output += '\n'
 
     return output
 
@@ -80,9 +104,8 @@ def buildStatusMessage(config):
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
     for player in status.players.sample:
-        name = re.sub(r'[*_`!|](\w+)[*_`!|]', r'\g<1>', player.name)
-        if not '[BOT]' in name:
-            message += getFormattedOutput(reName=name, realName=player.name)
+        name = re.sub(censoredWords, 'null', player.name)
+        message += getFormattedOutput(reName=name, realName=player.name)
 
     return message
 
