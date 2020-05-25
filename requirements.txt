@@ -2,7 +2,7 @@ Flask==1.1.2
 mcstatus==3.1.1
 slack==0.0.2
 simplejson==3.17.0
-slackclient==2.6.0
+slackclient==2.6.1
 autopep8==1.5.2
 pylint==2.5.2
 requests==2.23.0
