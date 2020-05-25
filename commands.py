@@ -36,10 +36,14 @@ def getFormattedOutput(reName, realName):
         with open(f'HCCore/players/{uuid}.json') as f:
             # Gathers nick from HCCore's JSON file
             nick = json.load(f)['nickname']
+            # Sets Nickmame once
+            ign = '\u200c'.join(reName[i:i+1]
+                                for i in range(0, len(reName), 1))
             if nick == None:  # if the Nick doesn't exist, return just the username
-                output = f'- {reName[:1]}\u200c{reName[1:]}\n'
+                output = f'- {ign}'
             else:
-                output = f'- {nick[:1]}\u200c{nick[1:]} ({reName[:1]}\u200c{reName[1:]})\n'
+                output = '- ' + '\u200c'.join(nick[i:i+1]
+                                              for i in range(0, len(nick), 1)) + f' ({ign})' + '\n'
     except FileNotFoundError as e:
         output = f'- {reName[:1]}\u200c{reName[1:]}\n'
         print(f'ERROR: {e}')
@@ -60,8 +64,8 @@ def buildStatusMessage(config):
     if status.players.online == 0:
         return f"*{config['name']}:* No players online :disappointed:"
 
-    """Fun addition - if there are 4 players online, 
-    there is a 20% chance that the appearing emoji will 
+    """Fun addition - if there are 4 players online,
+    there is a 20% chance that the appearing emoji will
     be :weed:. Can be disabled in config."""
     emote = ':bust_in_silhouette:'
     try:
@@ -77,7 +81,8 @@ def buildStatusMessage(config):
 
     for player in status.players.sample:
         name = re.sub(r'[*_`!|](\w+)[*_`!|]', r'\g<1>', player.name)
-        message += getFormattedOutput(reName=name, realName=player.name)
+        if not '[BOT]' in name:
+            message += getFormattedOutput(reName=name, realName=player.name)
 
     return message
 
@@ -254,7 +259,7 @@ def delete():
             f'Delete sender is {deleteReqSender}, orig is {origMessageSender}.')
         postEphemeralMessage(
             channel=channel,
-            uid=deleteReqSender,
+            user=deleteReqSender,
             text=f'Sorry, you can\'t do that!'
         )
 
