@@ -4,7 +4,7 @@
 		"FROM python:3.8.2-alpine",
 		"RUN mkdir -p /usr/src/app",
 		"WORKDIR /usr/src/app",
-		"MKDIR /players",
+		"RUN mkdir -p players",
 		"COPY ./requirements.txt /usr/src/app",
 		"RUN apk add --no-cache --virtual .build-deps gcc musl-dev",
 		"RUN pip3 install -r requirements.txt",
