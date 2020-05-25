@@ -11,7 +11,7 @@
 		"RUN pip3 install -r requirements.txt",
 		"RUN git clone https://github.com/clerie/mcuuid.git",
 		"WORKDIR mcuuid",
-		"RUN python3 mcuuid/setup.py",
+		"RUN python3 setup.py",
 		"WORKDIR ..",
 		"RUN apk del .build-deps",
 		"COPY ./ /usr/src/app",
