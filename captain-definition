@@ -2,6 +2,7 @@
 	"schemaVersion": 2,
 	"dockerfileLines": [
 		"FROM python:3.8.2-alpine",
+		"ADD https://www.google.com /time.now",
 		"RUN mkdir -p /usr/src/app",
 		"WORKDIR /usr/src/app",
 		"RUN mkdir -p players",
