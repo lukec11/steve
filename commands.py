@@ -47,8 +47,8 @@ def getFormattedOutput(reName, realName):
         ign = '\u200c'.join(reName[i:i+1]
                             for i in range(0, len(reName), 1))
         # Removes _ from nicknames, which can cause potential formatting issues in slack
-        nick = re.sub(r'[\_\~\*\]', '', nick)
-        ign = re.sub(r'[\_\~\*]', '', nick)  # Same as above, but for usernames
+        nick = re.sub(r'[_~*]', '', nick)
+        ign = re.sub(r'[_~*]', '', nick)  # Same as above, but for usernames
         if nick == None:  # if the Nick doesn't exist, return just the username
             output = f'- {ign}'
         else:
