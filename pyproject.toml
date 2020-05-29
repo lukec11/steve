@@ -5,7 +5,7 @@ description = "A slackbot for your favorite minecraft server!"
 authors = ["lukec11 <me@lukec.me>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 slack = "^0.0.2"
 slackclient = "^2.6.2"
 mcstatus = "^3.1.1"
