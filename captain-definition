@@ -8,7 +8,7 @@
 		"COPY ./pyproject.toml /usr/src/app",
 		"COPY ./poetry.lock /usr/src/app",
 		"RUN apk add --no-cache --virtual .build-deps gcc musl-dev git python3-dev openssl-dev libffi-dev make curl",
-		"RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python",
+		"RUN pip3 install poetry",
 		"RUN source $HOME/.poetry/env",
 		"RUN poetry install",
 		"RUN poetry shell",
