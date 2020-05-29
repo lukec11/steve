@@ -26,7 +26,7 @@ def getPlayerUUID(username):
     """Return as a "long" UUID"""
     data = requests.get(
         f'https://api.mojang.com/users/profiles/minecraft/{username}')
-    return UUID(data[id])
+    return UUID(data['id'])
 
 
 def getNick(uuid):
