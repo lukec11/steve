@@ -9,7 +9,7 @@
 		"COPY ./poetry.lock /usr/src/app",
 		"RUN apk add --no-cache --virtual .build-deps gcc musl-dev git python3-dev openssl-dev libffi-dev make curl",
 		"RUN pip3 install poetry",
-		"poetry config settings.virtualenvs.create false",
+		"RUN poetry config settings.virtualenvs.create false",
 		"RUN poetry install",
 		"RUN git clone https://github.com/clerie/mcuuid.git",
 		"WORKDIR mcuuid",
