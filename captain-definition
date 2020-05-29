@@ -7,7 +7,7 @@
 		"RUN mkdir -p players",
 		"COPY ./pyproject.toml /usr/src/app",
 		"COPY ./poetry.lock /usr/src/app",
-		"RUN apk add --no-cache --virtual .build-deps gcc musl-dev git libffi-dev",
+		"RUN apk add --no-cache --virtual .build-deps gcc musl-dev git python3-dev openssl-dev libffi-dev make",
 		"RUN pip3 install poetry",
 		"RUN poetry install",
 		"RUN git clone https://github.com/clerie/mcuuid.git",
