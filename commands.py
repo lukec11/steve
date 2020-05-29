@@ -27,7 +27,7 @@ def getPlayerUUID(username):
     data = json.loads(
         requests.get(
             f'https://api.mojang.com/users/profiles/minecraft/{username}'
-        )
+        ).text
     )
     return UUID(data['id'])
 
