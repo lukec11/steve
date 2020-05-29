@@ -7,7 +7,6 @@ import re
 import slack
 from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
-from mcuuid.api import GetPlayerData
 import requests
 
 # get configs
@@ -25,8 +24,12 @@ slack_client = slack.WebClient(
 
 def getPlayerUUID(username):
     """Return as a "long" UUID"""
-    data = GetPlayerData(username)
-    return UUID(data.uuid)
+    data = json.loads(
+        requests.get(
+            f'https://api.mojang.com/users/profiles/minecraft/{username}'
+        ).text
+    )
+    return UUID(data['id'])
 
 
 def getNick(uuid):
