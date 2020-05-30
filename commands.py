@@ -43,27 +43,30 @@ def getFormattedOutput(reName, realName):
     - Places a "\u200c" character after nickname
       -  prevent slack from tagging someone by name
       - still show name without visible modification"""
+    output = ""
     uuid = getPlayerUUID(realName)
+    ign = '\u200c'.join(reName[i:i+1]
+                        for i in range(0, len(reName), 1))
+    ign = re.sub(r'[_~*]', '', ign)  # Same as above, but for usernames
 
     try:
         nick = getNick(uuid)
-        ign = '\u200c'.join(reName[i:i+1]
-                            for i in range(0, len(reName), 1))
         # Removes _ from nicknames, which can cause potential formatting issues in slack
         nick = re.sub(r'[_~*]', '', nick)
-        ign = re.sub(r'[_~*]', '', ign)  # Same as above, but for usernames
+
         if nick == None:  # if the Nick doesn't exist, return just the username
             output = f'- {ign}'
         else:
             output = '- ' + \
                 '\u200c'.join(
                     nick[i:i+1] for i in range(0, len(nick), 1)) + f' ({ign})'
-    except TypeError as e:
-        f'- {ign}'
-        print(f'ERROR: {e}')
 
-    if '[BOT]' in nick:
-        output = f'~{output}~'
+        if '[BOT]' in nick:
+            output = f'~{output}~'
+
+    except TypeError as e:
+        output = f'- {ign}'
+        print(f'ERROR: {e}')
 
     output += '\n'
 
