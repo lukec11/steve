@@ -35,10 +35,7 @@ def getPlayerUUID(username):
 def getNick(uuid):
     res = requests.get(f'{playerDataApi}/{uuid}.json')
     nick = re.sub(censoredWords, 'null', res.json()['nickname'])
-    if isinstance(nick, str):
-        return nick
-    else:
-        raise TypeError
+    return nick
 
 
 def getFormattedOutput(reName, realName):
@@ -50,12 +47,13 @@ def getFormattedOutput(reName, realName):
     uuid = getPlayerUUID(realName)
     ign = '\u200c'.join(reName[i:i+1]
                         for i in range(0, len(reName), 1))
+    ign = re.sub(r'[_~*]', '', ign)  # Same as above, but for usernames
 
     try:
         nick = getNick(uuid)
         # Removes _ from nicknames, which can cause potential formatting issues in slack
         nick = re.sub(r'[_~*]', '', nick)
-        ign = re.sub(r'[_~*]', '', ign)  # Same as above, but for usernames
+
         if nick == None:  # if the Nick doesn't exist, return just the username
             output = f'- {ign}'
         else:
