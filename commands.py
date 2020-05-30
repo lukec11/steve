@@ -65,7 +65,7 @@ def getFormattedOutput(reName, realName):
             output = f'~{output}~'
 
     except TypeError as e:
-        f'- {ign}'
+        output = f'- {ign}'
         print(f'ERROR: {e}')
 
     output += '\n'
