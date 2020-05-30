@@ -46,6 +46,7 @@ def getFormattedOutput(reName, realName):
     - Places a "\u200c" character after nickname
       -  prevent slack from tagging someone by name
       - still show name without visible modification"""
+    output = ""
     uuid = getPlayerUUID(realName)
     ign = '\u200c'.join(reName[i:i+1]
                         for i in range(0, len(reName), 1))
