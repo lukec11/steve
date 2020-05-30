@@ -69,9 +69,6 @@ def getFormattedOutput(reName, realName):
         f'- {ign}'
         print(f'ERROR: {e}')
 
-    if '[BOT]' in nick:
-        output = f'~{output}~'
-
     output += '\n'
 
     return output
