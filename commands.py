@@ -35,7 +35,10 @@ def getPlayerUUID(username):
 def getNick(uuid):
     res = requests.get(f'{playerDataApi}/{uuid}.json')
     nick = re.sub(censoredWords, 'null', res.json()['nickname'])
-    return nick
+    if isinstance(nick, str):
+        return nick
+    else:
+        raise TypeError
 
 
 def getFormattedOutput(reName, realName):
@@ -44,11 +47,11 @@ def getFormattedOutput(reName, realName):
       -  prevent slack from tagging someone by name
       - still show name without visible modification"""
     uuid = getPlayerUUID(realName)
+    ign = '\u200c'.join(reName[i:i+1]
+                        for i in range(0, len(reName), 1))
 
     try:
         nick = getNick(uuid)
-        ign = '\u200c'.join(reName[i:i+1]
-                            for i in range(0, len(reName), 1))
         # Removes _ from nicknames, which can cause potential formatting issues in slack
         nick = re.sub(r'[_~*]', '', nick)
         ign = re.sub(r'[_~*]', '', ign)  # Same as above, but for usernames
@@ -58,6 +61,10 @@ def getFormattedOutput(reName, realName):
             output = '- ' + \
                 '\u200c'.join(
                     nick[i:i+1] for i in range(0, len(nick), 1)) + f' ({ign})'
+
+        if '[BOT]' in nick:
+            output = f'~{output}~'
+
     except TypeError as e:
         f'- {ign}'
         print(f'ERROR: {e}')
