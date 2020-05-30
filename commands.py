@@ -174,7 +174,8 @@ def postRichChatMessage(channel, blocks):
         token=slackBotToken,
         channel=channel,
         as_user=True,
-        blocks=blocks
+        blocks=blocks,
+        text='Message from @Steve!' # Include text as fallback for notifications
     )
 
 
