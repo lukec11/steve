@@ -33,9 +33,12 @@ def getPlayerUUID(username):
 
 
 def getNick(uuid):
-    res = requests.get(f'{playerDataApi}/{uuid}.json')
-    nick = re.sub(censoredWords, 'null', res.json()['nickname'])
-    return nick
+    try:
+        res = requests.get(f'{playerDataApi}/{uuid}.json')
+        nick = re.sub(censoredWords, 'null', res.json()['nickname'])
+        return nick
+    except ConnectionRefusedError:
+        return None
 
 
 def getFormattedOutput(reName, realName):
