@@ -37,7 +37,7 @@ def getNick(uuid):
         res = requests.get(f'{playerDataApi}/{uuid}.json')
         nick = re.sub(censoredWords, 'null', res.json()['nickname'])
         return nick
-    except ConnectionRefusedError:
+    except NewConnectionError:
         return None
 
 
