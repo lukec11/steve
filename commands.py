@@ -171,14 +171,14 @@ def request_valid(request):  # checks for valid slack token / ID
     return token_valid and team_id_valid
 
 
-def postRichChatMessage(channel, blocks, *args):
+def postRichChatMessage(channel, blocks, **kwargs):
     # Posts public JSON-formatted slack message
     slack_client.chat_postMessage(
         token=slackBotToken,
         channel=channel,
         as_user=True,
         blocks=blocks,
-        text=text or 'Message from @Steve!' # Include text as fallback for notifications
+        text=kwargs.get('text') or 'Message from @Steve!' # Include str as fallback 
     )
 
 
