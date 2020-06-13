@@ -171,14 +171,14 @@ def request_valid(request):  # checks for valid slack token / ID
     return token_valid and team_id_valid
 
 
-def postRichChatMessage(channel, blocks):
+def postRichChatMessage(channel, blocks, **kwargs):
     # Posts public JSON-formatted slack message
     slack_client.chat_postMessage(
         token=slackBotToken,
         channel=channel,
         as_user=True,
         blocks=blocks,
-        text='Message from @Steve!' # Include text as fallback for notifications
+        text=kwargs.get('text') or 'Message from @Steve!' # Include str as fallback 
     )
 
 
@@ -233,9 +233,10 @@ def players():
     user = request.form['user_id']
 
     msg = buildFullMessage(channel, user)
+    fallbackText = f'Message from @Steve, requested by <@{user}>'
 
     try:  # Attempts to post message in channel
-        postRichChatMessage(channel=channel, blocks=msg)
+        postRichChatMessage(channel=channel, blocks=msg, text=fallbackText)
     except:
         try:  # If it cannot post in the channel, it will attempt to join the channel
             joinChannel(
@@ -262,19 +263,15 @@ def delete():
     payload = json.loads(request.form.to_dict()['payload'])
 
     # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
-    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
-    if len(origMessageSignature) == 25:
-        origMessageSender = origMessageSignature[15:24]
-    elif len(origMessageSignature) == 27:
-        origMessageSender = origMessageSignature[15:26]
-
-    deleteReqSender = payload['user']['id']
+    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text'] #gets the specific text block that the UID is in
+    origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1) #gathers the UID from there using regex
+    deleteReqSender = payload['user']['id'] #gathers the UID of the person who asked for the reload
 
     channel = payload['channel']['id']
     ts = payload['message']['ts']
 
     # Only allows original message sender or me to delete message
-    if deleteReqSender == origMessageSender or deleteReqSender == 'UE8DH0UHM':  # yes ik
+    if deleteReqSender == origMessageSender or deleteReqSender == os.environ['SERVER_ADMIN']:  # yes ik
         delChatMessage(
             channel=channel,
             ts=ts
