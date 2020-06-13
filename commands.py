@@ -262,12 +262,14 @@ def delete():
     payload = json.loads(request.form.to_dict()['payload'])
 
     # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
-    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
-    if len(origMessageSignature) == 25:
+    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text'] #gets the specific text block that the UID is in
+    '''if len(origMessageSignature) == 25:
         origMessageSender = origMessageSignature[15:24]
     elif len(origMessageSignature) == 27:
-        origMessageSender = origMessageSignature[15:26]
+        origMessageSender = origMessageSignature[15:26]'''
 
+    origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1)
+    
     deleteReqSender = payload['user']['id']
 
     channel = payload['channel']['id']
