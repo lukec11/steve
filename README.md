@@ -1,4 +1,4 @@
-# slack-commands
+# steve
 
 
 Uses the [mcstatus](https://github.com/Dinnerbone/mcstatus) API to get online Minecrafters, 
