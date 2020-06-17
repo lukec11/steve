@@ -298,7 +298,7 @@ description = "Slack API clients for Web API and RTM API"
 name = "slackclient"
 optional = false
 python-versions = ">=3.6.0"
-version = "2.6.2"
+version = "2.7.1"
 
 [package.dependencies]
 aiohttp = ">3.5.2,<4.0.0"
@@ -369,7 +369,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "cce03e45db4ca8192e282e4a9690e27db1caff2269283fb137dba521724e76b1"
+content-hash = "ae7b815ac52f9d43051abb307b04a27ff1457d8af114bbe123923030a5b91ad3"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -580,8 +580,8 @@ slack = [
     {file = "slack-0.0.2.tar.gz", hash = "sha256:e0b0cd3ba730e81aa82eef0973a7970652b99f6445cb71a6dde1d29e6d13b051"},
 ]
 slackclient = [
-    {file = "slackclient-2.6.2-py2.py3-none-any.whl", hash = "sha256:305319e8b0a2ebaa9d23bb9940c9a034c6aa4e81ea3d79bce5a2b9ee81e05090"},
-    {file = "slackclient-2.6.2.tar.gz", hash = "sha256:66b33b217cd7989a61997f825d366a9d6544c3e6ca945fe36877bbfe9f1e5146"},
+    {file = "slackclient-2.7.1-py2.py3-none-any.whl", hash = "sha256:ccb0b8b203bc6087f7ab995fb4d2971dbe8925472afb078087ed76d1d8f939ca"},
+    {file = "slackclient-2.7.1.tar.gz", hash = "sha256:b1b24df115e78b908565d9fa67bb3a86e66dd9a133954b953eb1c0559e7205b9"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},
