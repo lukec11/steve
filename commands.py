@@ -56,7 +56,7 @@ def getFormattedOutput(reName, realName):
         nick = getNick(uuid)
         if nick == None:  # if the Nick doesn't exist, immediately return just the username
             return f'- {ign}\n'
-        
+
         # Removes _ from nicknames, which can cause potential formatting issues in slack
         nick = re.sub(r'[_~*]', '', nick)
 
@@ -178,7 +178,8 @@ def postRichChatMessage(channel, blocks, **kwargs):
         channel=channel,
         as_user=True,
         blocks=blocks,
-        text=kwargs.get('text') or 'Message from @Steve!' # Include str as fallback 
+        # Include str as fallback
+        text=kwargs.get('text') or 'Message from @Steve!'
     )
 
 
@@ -263,15 +264,19 @@ def delete():
     payload = json.loads(request.form.to_dict()['payload'])
 
     # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
-    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text'] #gets the specific text block that the UID is in
-    origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1) #gathers the UID from there using regex
-    deleteReqSender = payload['user']['id'] #gathers the UID of the person who asked for the reload
+    # gets the specific text block that the UID is in
+    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
+    # gathers the UID from there using regex
+    origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1)
+    # gathers the UID of the person who asked for the reload
+    deleteReqSender = payload['user']['id']
 
     channel = payload['channel']['id']
     ts = payload['message']['ts']
 
     # Only allows original message sender or me to delete message
-    if deleteReqSender == origMessageSender or deleteReqSender == os.environ['SERVER_ADMIN']:  # yes ik
+    # yes ik
+    if deleteReqSender == origMessageSender or deleteReqSender == os.environ['DELETE_ADMIN']:
         delChatMessage(
             channel=channel,
             ts=ts

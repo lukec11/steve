@@ -48,6 +48,8 @@ There is a usage example in `servers.json.template`.
 
 `CENSORED_WORDS` contains a regex string of things that you might want censored from appearing in slack - for example, this could help if someone set their nickname to something unsavory.
 
+`SERVER_ADMIN` contains a slack UID of someone who will be able to delete anyone's message - not just their own.
+
  ### Defaults
 
  The app defaults to running on port `8080`, on the IP `0.0.0.0`. 
