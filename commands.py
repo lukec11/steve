@@ -9,9 +9,6 @@ from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 import requests
 
-from dotenv import load_dotenv
-
-load_dotenv()
 # get configs
 slackVerifyToken = os.environ['TOKEN']
 slackTeamId = os.environ['TEAM_ID']
