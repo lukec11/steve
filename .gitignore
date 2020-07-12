@@ -17,3 +17,5 @@ users/
 .vscode/
 __pycache__/
 test*
+
+.env

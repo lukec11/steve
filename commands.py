@@ -15,6 +15,10 @@ slackTeamId = os.environ['TEAM_ID']
 slackBotToken = os.environ['BOT_OAUTH_TOKEN']
 playerDataApi = os.environ['PLAYER_DATA_API']
 censoredWords = os.environ['CENSORED_WORDS']
+# This is required because slack doesn't allow deleting messages with webhooks.
+# The app can be otherwise modified to use postMessage, but it can't talk in
+#  DMs or private channels without being invited.
+slackAdminToken = os.environ['ADMIN_TOKEN']
 
 
 slack_client = slack.WebClient(
@@ -129,20 +133,6 @@ def buildFullMessage(channel, user):
                     'type': 'divider'
                 },
                 {
-                    "type": "actions",
-                    "elements": [
-                            {
-                                "type": "button",
-                                "text": {
-                                        "type": "plain_text",
-                                        "text": "Delete",
-                                        "emoji": True
-                                },
-                                "style": "danger"
-                            }
-                    ]
-                },
-                {
                     'type': 'context',
                     'elements': [
                         {
@@ -153,10 +143,6 @@ def buildFullMessage(channel, user):
                 }
 
             ])
-
-    # Remove the divider after the last section
-    if len(message) > 1:
-        del message[-3]
 
     return message
 
@@ -204,12 +190,11 @@ def postEphemeralMessage(channel, text, user):
     )
 
 
-def delChatMessage(channel, ts):
+def delChatMessage(token, channel, ts):
     # Delete chat message based on ts
     slack_client.chat_delete(
-        token=slackBotToken,
+        token=token,
         channel=channel,
-        as_user=True,
         ts=ts
     )
 
@@ -232,26 +217,39 @@ def players():
 
     channel = request.form['channel_id']
     user = request.form['user_id']
+    response_url = request.form['response_url']
 
     msg = buildFullMessage(channel, user)
     fallbackText = f'Message from @Steve, requested by <@{user}>'
 
     try:  # Attempts to post message in channel
-        postRichChatMessage(channel=channel, blocks=msg, text=fallbackText)
+        postRichChatMessage(
+            channel=channel,
+            blocks=msg,
+            text=fallbackText
+        )
     except:
         try:  # If it cannot post in the channel, it will attempt to join the channel
             joinChannel(
                 channel=channel)
-            postRichChatMessage(channel=channel, blocks=msg)
-        except:  # If it cannot join the channel, it will DM the command runner
             postRichChatMessage(
-                channel=user,
-                blocks=msg
+                channel=channel,
+                blocks=msg,
+                text=fallbackText
             )
-            postPlainChatMessage(
-                channel=user,
-                text=f'In order to use the bot in the channel, please invite <@UKD6P483E>!')
-
+        except:  # If it cannot join the channel, it will post as a wehbook
+            requests.post(
+                response_url,
+                headers={
+                    'Content-Type': 'application/json',
+                },
+                json={
+                    'channel': channel,
+                    'blocks': msg,
+                    'text': fallbackText,
+                    'response_type': 'in_channel'
+                }
+            )
     # Returns 200 to make slack happy and avoid operation_timeout
     return ('', 200)
 
@@ -263,9 +261,8 @@ def delete():
     # Grabs and parses payload from button
     payload = json.loads(request.form.to_dict()['payload'])
 
-    # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
     # gets the specific text block that the UID is in
-    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
+    origMessageSignature = payload['message']['blocks'][-1]['elements'][0]['text']
     # gathers the UID from there using regex
     origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1)
     # gathers the UID of the person who asked for the reload
@@ -273,14 +270,28 @@ def delete():
 
     channel = payload['channel']['id']
     ts = payload['message']['ts']
+    response_url = payload['response_url']
 
     # Only allows original message sender or me to delete message
-    # yes ik
     if deleteReqSender == origMessageSender or deleteReqSender == os.environ['DELETE_ADMIN']:
-        delChatMessage(
-            channel=channel,
-            ts=ts
-        )
+        try:
+            delChatMessage(
+                token=slackBotToken,
+                channel=channel,
+                ts=ts
+            )
+        except:
+            requests.post(
+                response_url,
+                headers={
+                    'Content-Type': 'application/json',
+                },
+                json={
+                    'channel': channel,
+                    'text': "Sorry, slack won't let me delete this message due to arbitrary restrictions on webhooks.\n\nTo delete messages like this in the future, invite <@UKD6P483E> to the channel.",
+                    'response_type': 'ephemeral'
+                }
+            )
     else:
         print(
             f'Delete sender is {deleteReqSender}, orig is {origMessageSender}.')
@@ -290,10 +301,9 @@ def delete():
             text=f'Sorry, you can\'t do that!'
         )
 
-    return jsonify(
-        # Tells slack that the original message was deleted
-        delete_original=True
-    )
+    return jsonify({
+        "delete_original": True
+    })
 
 
 if __name__ == '__main__':
