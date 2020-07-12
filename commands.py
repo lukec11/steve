@@ -129,20 +129,6 @@ def buildFullMessage(channel, user):
                     'type': 'divider'
                 },
                 {
-                    "type": "actions",
-                    "elements": [
-                            {
-                                "type": "button",
-                                "text": {
-                                        "type": "plain_text",
-                                        "text": "Delete",
-                                        "emoji": True
-                                },
-                                "style": "danger"
-                            }
-                    ]
-                },
-                {
                     'type': 'context',
                     'elements': [
                         {
@@ -156,7 +142,7 @@ def buildFullMessage(channel, user):
 
     # Remove the divider after the last section
     if len(message) > 1:
-        del message[-3]
+        del message[-2]
 
     return message
 
