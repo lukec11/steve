@@ -15,6 +15,10 @@ slackTeamId = os.environ['TEAM_ID']
 slackBotToken = os.environ['BOT_OAUTH_TOKEN']
 playerDataApi = os.environ['PLAYER_DATA_API']
 censoredWords = os.environ['CENSORED_WORDS']
+# This is required because slack doesn't allow deleting messages with webhooks.
+# The app can be otherwise modified to use postMessage, but it can't talk in
+#  DMs or private channels without being invited.
+slackAdminToken = os.environ['ADMIN_TOKEN']
 
 
 slack_client = slack.WebClient(
@@ -189,7 +193,7 @@ def postEphemeralMessage(channel, text, user):
 def delChatMessage(channel, ts):
     # Delete chat message based on ts
     slack_client.chat_delete(
-        token=slackBotToken,
+        token=slackAdminToken,
         channel=channel,
         as_user=True,
         ts=ts
@@ -271,7 +275,6 @@ def delete():
     ts = payload['message']['ts']
 
     # Only allows original message sender or me to delete message
-    # yes ik
     if deleteReqSender == origMessageSender or deleteReqSender == os.environ['DELETE_ADMIN']:
         delChatMessage(
             channel=channel,
@@ -283,13 +286,12 @@ def delete():
         postEphemeralMessage(
             channel=channel,
             user=deleteReqSender,
-            text=f'Sorry, you can\'t do that!'
+            text=f'Sorry, you can\'t do that!',
         )
 
-    return jsonify(
-        # Tells slack that the original message was deleted
-        delete_original=True
-    )
+    return jsonify({
+        "delete_original": True
+    })
 
 
 if __name__ == '__main__':
