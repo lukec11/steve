@@ -9,6 +9,9 @@ from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 import requests
 
+from dotenv import load_dotenv
+
+load_dotenv()
 # get configs
 slackVerifyToken = os.environ['TOKEN']
 slackTeamId = os.environ['TEAM_ID']
@@ -190,12 +193,11 @@ def postEphemeralMessage(channel, text, user):
     )
 
 
-def delChatMessage(channel, ts):
+def delChatMessage(token, channel, ts):
     # Delete chat message based on ts
     slack_client.chat_delete(
-        token=slackAdminToken,
+        token=token,
         channel=channel,
-        as_user=True,
         ts=ts
     )
 
@@ -225,17 +227,10 @@ def players():
     fallbackText = f'Message from @Steve, requested by <@{user}>'
 
     try:  # Attempts to post message in channel
-        requests.post(
-            response_url,
-            headers={
-                'Content-Type': 'application/json',
-            },
-            json={
-                'channel': channel,
-                'blocks': msg,
-                'text': fallbackText,
-                'response_type': 'in_channel'
-            }
+        postRichChatMessage(
+            channel=channel,
+            blocks=msg,
+            text=fallbackText
         )
     except:
         try:  # If it cannot post in the channel, it will attempt to join the channel
@@ -246,13 +241,19 @@ def players():
                 blocks=msg,
                 text=fallbackText
             )
-        except:  # If it cannot join the channel, it will DM the command runner
-            postRichChatMessage(
-                channel=user,
-                blocks=msg,
-                text=fallbackText
+        except:  # If it cannot join the channel, it will post as a wehbook
+            requests.post(
+                response_url,
+                headers={
+                    'Content-Type': 'application/json',
+                },
+                json={
+                    'channel': channel,
+                    'blocks': msg,
+                    'text': fallbackText,
+                    'response_type': 'in_channel'
+                }
             )
-
     # Returns 200 to make slack happy and avoid operation_timeout
     return ('', 200)
 
@@ -273,13 +274,28 @@ def delete():
 
     channel = payload['channel']['id']
     ts = payload['message']['ts']
+    response_url = payload['response_url']
 
     # Only allows original message sender or me to delete message
     if deleteReqSender == origMessageSender or deleteReqSender == os.environ['DELETE_ADMIN']:
-        delChatMessage(
-            channel=channel,
-            ts=ts
-        )
+        try:
+            delChatMessage(
+                token=slackBotToken,
+                channel=channel,
+                ts=ts
+            )
+        except:
+            requests.post(
+                response_url,
+                headers={
+                    'Content-Type': 'application/json',
+                },
+                json={
+                    'channel': channel,
+                    'text': "Sorry, slack won't let me delete this message due to arbitrary restrictions on webhooks.\n\nTo delete messages like this in the future, invite <@UKD6P483E> to the channel.",
+                    'response_type': 'ephemeral'
+                }
+            )
     else:
         print(
             f'Delete sender is {deleteReqSender}, orig is {origMessageSender}.')
