@@ -218,7 +218,6 @@ def players():
     channel = request.form['channel_id']
     user = request.form['user_id']
     response_url = request.form['response_url']
-    print(request.form)
 
     msg = buildFullMessage(channel, user)
     fallbackText = f'Message from @Steve, requested by <@{user}>'
@@ -299,7 +298,7 @@ def delete():
         postEphemeralMessage(
             channel=channel,
             user=deleteReqSender,
-            text=f'Sorry, you can\'t do that!',
+            text=f'Sorry, you can\'t do that!'
         )
 
     return jsonify({
