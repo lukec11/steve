@@ -140,10 +140,6 @@ def buildFullMessage(channel, user):
 
             ])
 
-    # Remove the divider after the last section
-    if len(message) > 1:
-        del message[-2]
-
     return message
 
 
@@ -218,25 +214,38 @@ def players():
 
     channel = request.form['channel_id']
     user = request.form['user_id']
+    response_url = request.form['response_url']
 
     msg = buildFullMessage(channel, user)
     fallbackText = f'Message from @Steve, requested by <@{user}>'
 
     try:  # Attempts to post message in channel
-        postRichChatMessage(channel=channel, blocks=msg, text=fallbackText)
+        requests.post(
+            response_url,
+            headers={
+                'Content-Type': 'application/json',
+            },
+            data={
+                'channel': channel,
+                'blocks': msg,
+                'text': fallbackText
+            }
+        )
     except:
         try:  # If it cannot post in the channel, it will attempt to join the channel
             joinChannel(
                 channel=channel)
-            postRichChatMessage(channel=channel, blocks=msg)
+            postRichChatMessage(
+                channel=channel,
+                blocks=msg,
+                text=fallbackText
+            )
         except:  # If it cannot join the channel, it will DM the command runner
             postRichChatMessage(
                 channel=user,
-                blocks=msg
+                blocks=msg,
+                text=fallbackText
             )
-            postPlainChatMessage(
-                channel=user,
-                text=f'In order to use the bot in the channel, please invite <@UKD6P483E>!')
 
     # Returns 200 to make slack happy and avoid operation_timeout
     return ('', 200)
