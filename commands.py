@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import json
 import os
 import sys
@@ -17,7 +16,6 @@ slackBotToken = os.environ['BOT_OAUTH_TOKEN']
 playerDataApi = os.environ['PLAYER_DATA_API']
 censoredWords = os.environ['CENSORED_WORDS']
 
-load_dotenv()
 
 slack_client = slack.WebClient(
     token=slackBotToken
@@ -297,6 +295,6 @@ def delete():
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
-        debug=True,
+        debug=False,
         port=8000
     )
