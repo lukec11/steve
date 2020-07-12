@@ -249,9 +249,8 @@ def delete():
     # Grabs and parses payload from button
     payload = json.loads(request.form.to_dict()['payload'])
 
-    # Parses original message sender from message - slack decided to up the number of caracters in their UIDs, and I didn't feel like writing regex for this.
     # gets the specific text block that the UID is in
-    origMessageSignature = payload['message']['blocks'][2]['elements'][0]['text']
+    origMessageSignature = payload['message']['blocks'][-1]['elements'][0]['text']
     # gathers the UID from there using regex
     origMessageSender = re.search(r'\<\@(.+)\>', origMessageSignature).group(1)
     # gathers the UID of the person who asked for the reload
