@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import json
 import os
 import sys
@@ -16,6 +17,7 @@ slackBotToken = os.environ['BOT_OAUTH_TOKEN']
 playerDataApi = os.environ['PLAYER_DATA_API']
 censoredWords = os.environ['CENSORED_WORDS']
 
+load_dotenv()
 
 slack_client = slack.WebClient(
     token=slackBotToken
@@ -215,6 +217,7 @@ def players():
     channel = request.form['channel_id']
     user = request.form['user_id']
     response_url = request.form['response_url']
+    print(request.form)
 
     msg = buildFullMessage(channel, user)
     fallbackText = f'Message from @Steve, requested by <@{user}>'
@@ -225,10 +228,11 @@ def players():
             headers={
                 'Content-Type': 'application/json',
             },
-            data={
+            json={
                 'channel': channel,
                 'blocks': msg,
-                'text': fallbackText
+                'text': fallbackText,
+                'response_type': 'in_channel'
             }
         )
     except:
@@ -293,6 +297,6 @@ def delete():
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
-        debug=False,
+        debug=True,
         port=8000
     )
