@@ -108,9 +108,25 @@ def buildStatusMessage(config):
     message = (f"*{config['name']}:* " + str(status.players.online) +
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
+    playersList = []
+    botsList = []
+
     for player in status.players.sample:
         name = re.sub(censoredWords, 'null', player.name)
-        message += getFormattedOutput(reName=name, realName=player.name)
+        p = getFormattedOutput(reName=name, realName=player.name)
+        if '[BOT]' in p:
+            botsList.append(p)
+        else:
+            playersList.append(p)
+
+    playersList.sort()
+    botsList.sort()
+
+    for player in playersList:
+        message += player
+
+    for bot in botsList:
+        message += bot
 
     return message
 
@@ -313,6 +329,6 @@ def delete():
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
-        debug=False,
+        debug=True,
         port=8000
     )
