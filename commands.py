@@ -108,9 +108,21 @@ def buildStatusMessage(config):
     message = (f"*{config['name']}:* " + str(status.players.online) +
                ' out of ' + str(status.players.max) + f' {emote} online:\n')
 
+    playersList = []
+    botsList = []
+
     for player in status.players.sample:
         name = re.sub(censoredWords, 'null', player.name)
-        message += getFormattedOutput(reName=name, realName=player.name)
+        player = getFormattedOutput(reName=name, realName=player.name)
+        if '[BOT]' in player:
+            botsList.append(player)
+        else:
+            playersList.append(player)
+
+    playersList = playersList.sort()
+    botsList = botsList.sort()
+
+    message = playersList + botsList
 
     return message
 
