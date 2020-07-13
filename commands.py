@@ -119,8 +119,8 @@ def buildStatusMessage(config):
         else:
             playersList.append(player)
 
-    playersList = playersList.sort()
-    botsList = botsList.sort()
+    playersList.sort()
+    botsList.sort()
 
     message = playersList + botsList
 
