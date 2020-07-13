@@ -9,6 +9,9 @@ from flask import Flask, abort, jsonify, request
 from mcstatus import MinecraftServer
 import requests
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # get configs
 slackVerifyToken = os.environ['TOKEN']
 slackTeamId = os.environ['TEAM_ID']
@@ -113,16 +116,20 @@ def buildStatusMessage(config):
 
     for player in status.players.sample:
         name = re.sub(censoredWords, 'null', player.name)
-        player = getFormattedOutput(reName=name, realName=player.name)
-        if '[BOT]' in player:
-            botsList.append(player)
+        p = getFormattedOutput(reName=name, realName=player.name)
+        if '[BOT]' in p:
+            botsList.append(p)
         else:
-            playersList.append(player)
+            playersList.append(p)
 
     playersList.sort()
     botsList.sort()
 
-    message = playersList + botsList
+    for player in playersList:
+        message += player
+
+    for bot in botsList:
+        message += bot
 
     return message
 
@@ -325,6 +332,6 @@ def delete():
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
-        debug=False,
+        debug=True,
         port=8000
     )
