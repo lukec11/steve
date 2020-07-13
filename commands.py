@@ -144,6 +144,10 @@ def buildFullMessage(channel, user):
 
             ])
 
+    # Remove divider after last section
+    if len(message) > 1:
+        del message[-2]
+
     return message
 
 
