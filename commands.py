@@ -239,6 +239,15 @@ def players():
     user = request.form['user_id']
     response_url = request.form['response_url']
 
+    text = request.form['text']
+    flagText = os.environ['flag_text']
+    ctfFlag = os.environ['ctf_flag']
+    if flagText in text:
+        postPlainChatMessage(
+            channel=user,
+            text=f"congrats, you found the flag! {ctfFlag}")
+        return ('', 200)
+
     msg = buildFullMessage(channel, user)
     fallbackText = f'Message from @Steve, requested by <@{user}>'
 
