@@ -212,7 +212,7 @@ description = "A library to query Minecraft Servers for their status and capabil
 name = "mcstatus"
 optional = false
 python-versions = ">=3.5"
-version = "3.1.1"
+version = "4.0.0"
 
 [package.dependencies]
 click = "*"
@@ -369,7 +369,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "8f7f908f03765ca8f6917801d1ff167038c012db28a5adf9bfc331b5bd30cd7a"
+content-hash = "f685c5ac1599b4d377ab2e19e416dfdc48ff2a9da3f6a13156bf5f2414fe326f"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -508,8 +508,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 mcstatus = [
-    {file = "mcstatus-3.1.1-py3-none-any.whl", hash = "sha256:8cb9ce9d6959ae1739cd0d8ee053bc875d36721eead95de8616d86e02831cd66"},
-    {file = "mcstatus-3.1.1.tar.gz", hash = "sha256:8ba2c8c10c57b634db51b31d2abc5f108c9df56c12c576cf16fbb35008194ce9"},
+    {file = "mcstatus-4.0.0-py3-none-any.whl", hash = "sha256:0aaca8e5696439ac4e8281d291a620860c4a1a416a9be832dc8bdca29e3e923d"},
+    {file = "mcstatus-4.0.0.tar.gz", hash = "sha256:cf7a2c614523fa42007021fb60f5574266e366805f40d97adad754e467c157d9"},
 ]
 multidict = [
     {file = "multidict-4.7.6-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:275ca32383bc5d1894b6975bb4ca6a7ff16ab76fa622967625baeebcf8079000"},
