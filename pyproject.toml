@@ -13,7 +13,7 @@ Flask = "^1.1.2"
 simplejson = "^3.17.2"
 autopep8 = "^1.5.4"
 pylint = "^2.5.3"
-requests = "^2.23.0"
+requests = "^2.24.0"
 
 [tool.poetry.dev-dependencies]
 
