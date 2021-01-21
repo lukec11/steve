@@ -2,5 +2,10 @@
 	{
 		"name": "Vanilla",
 		"address": "mc.hackclub.com"
+	},
+	{
+		"name": "Modded,
+                "adress": "mc.hackclub.com:25566"
 	}
+
 ]
