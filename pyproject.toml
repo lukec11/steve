@@ -11,7 +11,7 @@ slackclient = "^2.9.1"
 mcstatus = "^4.0.0"
 Flask = "^1.1.2"
 simplejson = "^3.17.2"
-autopep8 = "^1.5.4"
+autopep8 = "^1.5.6"
 pylint = "^2.6.0"
 requests = "^2.24.0"
 
